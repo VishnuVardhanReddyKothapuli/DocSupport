@@ -76,9 +76,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
             {/* Header: Identity & Latency */}
             <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#D2D2D7]/40 dark:border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-md bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] flex items-center justify-center font-bold text-xs">
-                  D
-                </div>
+                <img
+                  src="/logo-icon.png"
+                  alt="DocSupport Logo"
+                  className="w-6 h-6 rounded-md object-contain shadow-xs border border-black/10 dark:border-white/15"
+                />
                 <span className="font-semibold text-xs tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
                   DocSupport Grounded RAG
                 </span>

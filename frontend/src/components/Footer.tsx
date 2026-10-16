@@ -120,8 +120,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         {/* Bottom Bar: Clean Copyright & Legal links only */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#86868B]">
-          <div>
-            Copyright &copy; {new Date().getFullYear()} DocSupport. All rights reserved.
+          <div className="flex items-center gap-2">
+            <img
+              src="/logo-icon.png"
+              alt="DocSupport Logo"
+              className="w-4 h-4 rounded object-contain opacity-80"
+            />
+            <span>Copyright &copy; {new Date().getFullYear()} DocSupport. All rights reserved.</span>
           </div>
           <div className="flex items-center gap-6">
             <button

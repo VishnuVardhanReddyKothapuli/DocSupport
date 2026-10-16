@@ -36,9 +36,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="flex items-center gap-2.5 group text-left focus:outline-none"
             title="Return to Product Overview"
           >
-            <div className="w-7 h-7 rounded-lg bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] flex items-center justify-center font-bold text-xs tracking-tight shadow-sm">
-              D
-            </div>
+            <img
+              src="/logo-icon.png"
+              alt="DocSupport Logo"
+              className="w-7 h-7 rounded-lg object-contain shadow-xs border border-black/10 dark:border-white/15"
+            />
             <div>
               <h1 className="font-semibold text-sm tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
                 DocSupport

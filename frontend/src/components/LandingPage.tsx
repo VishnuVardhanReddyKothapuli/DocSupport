@@ -36,6 +36,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         <section className="pt-16 pb-20 md:pt-28 md:pb-28 px-6 max-w-7xl mx-auto text-center">
           {/* Eyebrow badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-[#6E6E73] dark:text-[#A1A1A6] text-xs font-medium mb-6">
+            <img src="/logo-icon.png" alt="DocSupport Logo" className="w-3.5 h-3.5 rounded object-contain" />
             <span>DocSupport Enterprise RAG</span>
             <span className="w-1 h-1 rounded-full bg-[#86868B]"></span>
             <span>GitLoader &bull; LangGraph &bull; Langfuse</span>

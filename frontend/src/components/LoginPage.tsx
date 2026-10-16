@@ -90,9 +90,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
               <span>Back to Overview</span>
             </button>
 
-            <div className="w-10 h-10 rounded-xl bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] flex items-center justify-center font-bold text-base mx-auto mb-4 shadow-subtle">
-              D
-            </div>
+            <img
+              src="/logo-icon.png"
+              alt="DocSupport Logo"
+              className="w-12 h-12 rounded-2xl object-contain mx-auto mb-4 shadow-subtle border border-black/10 dark:border-white/15"
+            />
 
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
               Sign in to DocSupport

@@ -33,9 +33,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
           onClick={() => onNavigate('landing')}
           className="flex items-center gap-2.5 group focus:outline-none"
         >
-          <div className="w-6 h-6 rounded-md bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] flex items-center justify-center text-xs font-semibold">
-            D
-          </div>
+          <img
+            src="/logo-icon.png"
+            alt="DocSupport Logo"
+            className="w-6 h-6 rounded-md object-contain shadow-xs border border-black/10 dark:border-white/15"
+          />
           <span className="font-semibold text-sm tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
             DocSupport
           </span>
