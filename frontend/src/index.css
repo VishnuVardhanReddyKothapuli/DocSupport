@@ -4,34 +4,44 @@
 
 @layer base {
   :root {
-    --bg-canvas: #f8fafc;
+    --bg-canvas: #fbfbfd;
+    --bg-surface: #f5f5f7;
     --bg-card: #ffffff;
-    --bg-ai-tint: #f4eff7;
-    --border-color: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-secondary: #565656;
+    --border-color: #d2d2d7;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --accent-blue: #0071e3;
   }
 
   .dark {
-    --bg-canvas: #090d16;
-    --bg-card: #111827;
-    --bg-ai-tint: #161a29;
-    --border-color: #1f2937;
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
+    --bg-canvas: #000000;
+    --bg-surface: #161617;
+    --bg-card: #1d1d1f;
+    --border-color: rgba(255, 255, 255, 0.12);
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --accent-blue: #2997ff;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 
-/* Custom Scrollbars */
+/* Apple-style minimalist scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -39,19 +49,24 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.4);
+  background: rgba(140, 140, 145, 0.35);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.6);
+  background: rgba(140, 140, 145, 0.6);
 }
 
-/* Glowing utilities */
-.glow-effect {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+/* Hairline border utility */
+.border-hairline {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.dark .border-hairline {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
-.glow-border {
-  border: 1px solid rgba(99, 102, 241, 0.4);
+/* Focus outline */
+input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #0071e3;
+  outline-offset: 1px;
 }

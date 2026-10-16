@@ -4,15 +4,50 @@ import { Dashboard } from './components/Dashboard';
 import { QAWorkspace } from './components/QAWorkspace';
 import { UploadModal } from './components/UploadModal';
 import { LandingPage } from './components/LandingPage';
+import { LoginPage } from './components/LoginPage';
+import { TermsPage } from './components/TermsPage';
 import { fetchDocuments, deleteDocument, DocumentItem } from './api/sourceIngestion';
 
+type Route = 'landing' | 'login' | 'terms' | 'app';
+
+function getInitialRoute(): Route {
+  if (typeof window === 'undefined') return 'landing';
+  const hash = window.location.hash.toLowerCase();
+  if (hash === '#/login' || hash === '#login') return 'login';
+  if (hash === '#/terms' || hash === '#terms') return 'terms';
+  if (hash === '#/app' || hash === '#app') return 'app';
+  return 'landing';
+}
+
 export function App() {
-  const [activeView, setActiveView] = useState<'landing' | 'app'>('app');
+  const [currentRoute, setCurrentRoute] = useState<Route>(getInitialRoute);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'qa'>('dashboard');
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Sync route with window.location.hash
+  const navigateTo = (route: Route) => {
+    setCurrentRoute(route);
+    if (route === 'landing') {
+      window.location.hash = '#/';
+    } else {
+      window.location.hash = `#/${route}`;
+    }
+    // Scroll window to top on route change
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const route = getInitialRoute();
+      setCurrentRoute(route);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Load documents
   const loadDocs = async () => {
@@ -77,21 +112,38 @@ export function App() {
     setActiveTab('qa');
   };
 
-  if (activeView === 'landing') {
-    return <LandingPage onEnterApp={() => setActiveView('app')} />;
+  // Route Views
+  if (currentRoute === 'landing') {
+    return <LandingPage onNavigate={navigateTo} />;
+  }
+
+  if (currentRoute === 'login') {
+    return (
+      <LoginPage
+        onNavigate={navigateTo}
+        onLoginSuccess={(_userId) => {
+          navigateTo('app');
+        }}
+      />
+    );
+  }
+
+  if (currentRoute === 'terms') {
+    return <TermsPage onNavigate={navigateTo} />;
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F3F4F6]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#FBFBFD] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] transition-colors duration-200">
       {/* Left Sidebar */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         documentCount={documents.length}
+        onNavigate={navigateTo}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden">
+      <main className="flex-1 flex flex-col h-full overflow-hidden bg-white dark:bg-[#000000]">
         {activeTab === 'dashboard' ? (
           <Dashboard
             documents={documents}

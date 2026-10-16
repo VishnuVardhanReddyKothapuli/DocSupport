@@ -8,48 +8,73 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Octet AI Chat Palette (https://octet.design/colors/palette/ai-chat-color-palette-1732614389/)
-        octet: {
-          white: "#fefefe",
-          lilac: "#f4eff7",
-          rose: "#f3e5ec",
-          border: "#d6cdd1",
-          muted: "#b2a3a4",
-          charcoal: "#565656",
+        // Apple-inspired Editorial & Product Palette
+        apple: {
+          canvas: "#FBFBFD",
+          surface: "#F5F5F7",
+          card: "#FFFFFF",
+          border: "#D2D2D7",
+          borderSubtle: "#E5E5EA",
+          textPrimary: "#1D1D1F",
+          textSecondary: "#6E6E73",
+          textTertiary: "#86868B",
+          blue: "#0071E3",
+          blueHover: "#0077ED",
+          darkCanvas: "#000000",
+          darkSurface: "#161617",
+          darkCard: "#1D1D1F",
+          darkBorder: "rgba(255, 255, 255, 0.12)",
+          darkTextPrimary: "#F5F5F7",
+          darkTextSecondary: "#A1A1A6",
         },
-        // Electric Indigo & Cyber Slate Tokens
-        indigo: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1', // Electric Indigo
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+        // Cyber Slate & Titanium Accent Tokens for dark mode consistency
+        titanium: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
         },
         cyber: {
           canvas: "#090D16",
           card: "#111827",
-          cardLight: "#FFFFFF",
           border: "#1F2937",
-          borderLight: "#E2E8F0",
-          text: "#F3F4F6",
-          muted: "#9CA3AF"
         }
       },
-      boxShadow: {
-        'glow-sm': '0 0 15px rgba(99, 102, 241, 0.25)',
-        'glow-md': '0 0 25px rgba(99, 102, 241, 0.35)',
-        'glow-lg': '0 0 40px rgba(99, 102, 241, 0.45)',
-        'soft-purple': '0 4px 20px rgba(244, 239, 247, 0.8)',
-      },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'Menlo', 'monospace'],
+        sans: [
+          'SF Pro Display',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Inter',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif'
+        ],
+        mono: [
+          'SF Mono',
+          'Fira Code',
+          'JetBrains Mono',
+          'Menlo',
+          'monospace'
+        ],
+      },
+      letterSpacing: {
+        tighter: '-0.04em',
+        tight: '-0.02em',
+        normal: '0',
+        wide: '0.02em',
+      },
+      boxShadow: {
+        'subtle': '0 2px 8px rgba(0, 0, 0, 0.04)',
+        'elevated': '0 12px 32px rgba(0, 0, 0, 0.06)',
+        'dark-elevated': '0 12px 32px rgba(0, 0, 0, 0.4)',
       }
     },
   },
