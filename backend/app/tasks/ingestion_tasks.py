@@ -182,15 +182,30 @@ def ingest_youtube_task(document_id: str, url: str, title: Optional[str] = None)
 
 def dispatch_task(task_func, *args, **kwargs):
     """
-    Attempts to dispatch via Celery. If Redis is down or unavailable,
-    gracefully executes synchronously so the request never fails!
+    Dispatches task via Celery if active workers exist; otherwise
+    immediately executes in a background thread so tasks never get stuck in 'Queued'!
     """
+    use_celery = False
     try:
-        task_func.delay(*args, **kwargs)
-        logger.info(f"Dispatched Celery task {task_func.__name__} asynchronously.")
-    except Exception as e:
-        logger.warning(f"Celery dispatch failed ({e}). Running task synchronously in background...")
-        import threading
-        thread = threading.Thread(target=task_func, args=args, kwargs=kwargs)
-        thread.daemon = True
-        thread.start()
+        insp = celery_app.control.inspect(timeout=0.3)
+        active_workers = insp.ping()
+        if active_workers:
+            use_celery = True
+    except Exception:
+        use_celery = False
+
+    if use_celery:
+        try:
+            task_func.delay(*args, **kwargs)
+            logger.info(f"Dispatched Celery task {task_func.__name__} to active worker.")
+            return
+        except Exception as e:
+            logger.warning(f"Celery dispatch error ({e}), falling back to background thread.")
+
+    # Execute in daemon background thread immediately
+    import threading
+    logger.info(f"Executing {task_func.__name__} in daemon background thread.")
+    thread = threading.Thread(target=task_func, args=args, kwargs=kwargs)
+    thread.daemon = True
+    thread.start()
+
