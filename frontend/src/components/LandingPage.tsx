@@ -15,7 +15,6 @@ import {
   ShieldAlert,
   Clock,
   Layers,
-  Sparkles,
   ExternalLink
 } from 'lucide-react';
 import { Navbar } from './Navbar';
@@ -110,8 +109,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   {/* Assistant Grounded Answer */}
                   <div className="p-4 rounded-xl bg-[#F5F5F7] dark:bg-[#1D1D1F] border border-[#D2D2D7]/40 dark:border-white/5 space-y-2">
                     <div className="flex items-center justify-between text-[11px] font-mono text-[#86868B]">
-                      <span className="flex items-center gap-1.5 text-[#1D1D1F] dark:text-[#F5F5F7] font-semibold">
-                        <Sparkles className="w-3.5 h-3.5 text-[#0071E3]" />
+                      <span className="text-[#1D1D1F] dark:text-[#F5F5F7] font-semibold">
                         Grounded Response
                       </span>
                       <span>Groq llama-3.3-70b</span>

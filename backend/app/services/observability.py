@@ -8,25 +8,29 @@ class NoOpSpan:
     """Fallback no-op span when Langfuse is not configured or in offline mode."""
     def end(self, **kwargs):
         pass
-    def span(self, **kwargs):
-        return self
-    def generation(self, **kwargs):
-        return self
-    def event(self, **kwargs):
+    def update(self, **kwargs):
         pass
-    def score(self, **kwargs):
+    def start_span(self, **kwargs):
+        return self
+    def start_observation(self, **kwargs):
+        return self
+    def score_trace(self, **kwargs):
+        pass
+    def update_trace(self, **kwargs):
         pass
 
 class NoOpTrace:
     """Fallback no-op trace."""
-    id = "local-trace"
-    def span(self, **kwargs):
+    trace_id = "local-trace"
+    def start_span(self, **kwargs):
         return NoOpSpan()
-    def generation(self, **kwargs):
+    def start_observation(self, **kwargs):
         return NoOpSpan()
-    def score(self, **kwargs):
+    def score_trace(self, **kwargs):
         pass
-    def update(self, **kwargs):
+    def update_trace(self, **kwargs):
+        pass
+    def end(self, **kwargs):
         pass
 
 class LangfuseService:
@@ -34,7 +38,7 @@ class LangfuseService:
 
     @classmethod
     def get_client(cls):
-        """Lazy initialization of Langfuse client."""
+        """Lazy initialization of Langfuse v3 client."""
         if cls._client is not None:
             return cls._client
 
@@ -64,23 +68,27 @@ class LangfuseService:
         document_id: str,
         metadata: Optional[Dict[str, Any]] = None
     ):
-        """Creates a new top-level Langfuse trace for RAG query."""
+        """Creates a new top-level Langfuse v3 root span & trace for RAG query."""
         client = cls.get_client()
         if not client:
             return NoOpTrace()
 
         try:
-            trace = client.trace(
+            # Langfuse v3 creates root span which registers the trace
+            root_span = client.start_span(
                 name=name,
-                user_id=user_id,
                 input={"query": query},
                 metadata={
                     "document_id": document_id,
                     **(metadata or {})
-                },
-                tags=["enterprise-rag", "gitloader", settings.ENVIRONMENT]
+                }
             )
-            return trace
+            root_span.update_trace(
+                user_id=user_id,
+                input={"query": query},
+                tags=["enterprise-rag", settings.ENVIRONMENT]
+            )
+            return root_span
         except Exception as e:
             logger.warning(f"Error creating Langfuse trace: {e}")
             return NoOpTrace()
@@ -95,18 +103,19 @@ class LangfuseService:
     ):
         """Logs input guardrail execution span to Langfuse."""
         try:
-            span = trace.span(
+            span = trace.start_span(
                 name="Input Guardrail",
                 input={"query_check": "prompt_injection_sanitization"},
-                output={"is_safe": is_safe, "rejection_reason": rejection_reason},
                 metadata={"latency_ms": latency_ms}
             )
-            trace.score(
+            span.update(output={"is_safe": is_safe, "rejection_reason": rejection_reason})
+            span.end()
+
+            trace.score_trace(
                 name="input_safety",
                 value=1.0 if is_safe else 0.0,
                 comment=rejection_reason or "Safe query"
             )
-            span.end()
         except Exception as e:
             logger.warning(f"Error logging input guardrail to Langfuse: {e}")
 
@@ -121,12 +130,12 @@ class LangfuseService:
     ):
         """Logs vector similarity search span to Langfuse."""
         try:
-            span = trace.span(
+            span = trace.start_span(
                 name="Vector Retrieval (pgvector)",
                 input={"top_k": top_k},
-                output={"retrieved_count": retrieved_count, "chunks": chunks_metadata},
                 metadata={"engine": "pgvector_hnsw_cosine", "latency_ms": latency_ms}
             )
+            span.update(output={"retrieved_count": retrieved_count, "chunks": chunks_metadata})
             span.end()
         except Exception as e:
             logger.warning(f"Error logging retrieval to Langfuse: {e}")
@@ -140,9 +149,10 @@ class LangfuseService:
         output: str,
         latency_ms: float
     ):
-        """Logs Groq LLM inference generation to Langfuse."""
+        """Logs Groq LLM inference generation observation to Langfuse."""
         try:
-            gen = trace.generation(
+            gen = trace.start_observation(
+                as_type="generation",
                 name="Groq LLM Generation",
                 model=model,
                 input=prompt,
@@ -164,23 +174,36 @@ class LangfuseService:
     ):
         """Logs output hallucination prevention span and grounding score to Langfuse."""
         try:
-            span = trace.span(
+            span = trace.start_span(
                 name="Output Guardrail",
-                output={
-                    "is_grounded": is_grounded,
-                    "abstained": abstained,
-                    "citations_count": citations_count,
-                    "abstention_reason": abstention_reason
-                }
+                metadata={"citations_count": citations_count}
             )
-            trace.score(
+            span.update(output={
+                "is_grounded": is_grounded,
+                "abstained": abstained,
+                "citations_count": citations_count,
+                "abstention_reason": abstention_reason
+            })
+            span.end()
+
+            trace.score_trace(
                 name="grounding_verification",
                 value=0.0 if abstained else (1.0 if is_grounded else 0.5),
                 comment="Abstained due to insufficient evidence" if abstained else "Verified grounded in retrieved chunks"
             )
-            span.end()
-            trace.update(
+            trace.update_trace(
                 output={"final_answer": "abstained" if abstained else "grounded_response"}
             )
+            trace.end()
         except Exception as e:
             logger.warning(f"Error logging output guardrail to Langfuse: {e}")
+
+    @classmethod
+    def flush(cls):
+        """Flushes queued events to the Langfuse backend."""
+        client = cls.get_client()
+        if client:
+            try:
+                client.flush()
+            except Exception as e:
+                logger.warning(f"Error flushing Langfuse client: {e}")

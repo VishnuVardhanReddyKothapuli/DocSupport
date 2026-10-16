@@ -9,8 +9,7 @@ import {
   AlertCircle, 
   Loader2, 
   ArrowLeft,
-  ShieldCheck,
-  Sparkles
+  ShieldCheck
 } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
@@ -228,8 +227,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
               disabled={loading}
               className="w-full py-2.5 rounded-full border border-[#D2D2D7] dark:border-white/15 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-[#1D1D1F] dark:text-[#F5F5F7] text-xs font-medium transition-colors flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#0071E3]" />
               <span>Explore as Guest Developer</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#86868B]" />
             </button>
           </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Sun, Moon, ArrowRight, Menu, X, BookOpen, User } from 'lucide-react';
+import { Sun, Moon, ArrowRight, Menu, X, BookOpen, User } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 
 interface NavbarProps {
@@ -70,14 +70,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
           >
             Architecture
           </button>
-          <a
-            href="http://localhost:8000/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#0071E3] dark:hover:text-[#2997FF] transition-colors flex items-center gap-1"
-          >
-            <span>API Docs</span>
-          </a>
           <button
             onClick={() => onNavigate('terms')}
             className={`hover:text-[#0071E3] dark:hover:text-[#2997FF] transition-colors ${
@@ -157,14 +149,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
           >
             Architecture
           </button>
-          <a
-            href="http://localhost:8000/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full text-left py-1.5 text-[#1D1D1F] dark:text-[#F5F5F7]"
-          >
-            API Docs
-          </a>
           <button
             onClick={() => {
               setMobileMenuOpen(false);

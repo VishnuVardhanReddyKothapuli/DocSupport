@@ -11,6 +11,7 @@ from app.services.embedding import generate_embeddings_batch
 from app.services.parsers import DocumentParserService
 from app.services.rag_graph import rag_agent_graph
 from app.services.guardrails import ABSTENTION_PHRASE
+from app.services.observability import LangfuseService
 
 SAMPLE_CODEBASE = """
 # User Authentication Service
@@ -84,6 +85,12 @@ async def run_end_to_end_test():
         # 3. Test Question: Grounded Query
         query_1 = "What algorithm is used by TokenManager and what is the token expiry time?"
         print(f"\n[3] Testing Grounded Query: '{query_1}'")
+        trace_1 = LangfuseService.create_rag_trace(
+            name="E2E Test - Grounded Query",
+            user_id=user_id,
+            query=query_1,
+            document_id=str(doc_id)
+        )
         state_1 = {
             "query": query_1,
             "document_id": str(doc_id),
@@ -99,7 +106,7 @@ async def run_end_to_end_test():
             "abstention_reason": None,
             "verified_citations": [],
             "latency_ms": 0.0,
-            "langfuse_trace": None
+            "langfuse_trace": trace_1
         }
         res_1 = await rag_agent_graph.ainvoke(state_1)
         print(f"-> Answer: {res_1['final_answer']}")
@@ -158,6 +165,9 @@ async def run_end_to_end_test():
         print(f"-> Rejected/Abstained: {res_3['abstained']}")
         print(f"-> Reason: {res_3.get('abstention_reason')}")
         assert res_3["abstained"], "Expected input guardrail to reject injection"
+
+        LangfuseService.flush()
+        print("[*] Flushed all traces to Langfuse successfully.")
 
         print("\n========================================")
         print("ALL END-TO-END RAG TESTS PASSED SUCCESSFULLY!")

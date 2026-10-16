@@ -110,3 +110,6 @@ async def query_knowledge_source(
             citations=[],
             latency_ms=elapsed_ms
         )
+    finally:
+        LangfuseService.flush()
+

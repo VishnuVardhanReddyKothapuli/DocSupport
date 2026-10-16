@@ -5,19 +5,10 @@ import {
   Trash2, 
   MessageSquare, 
   ExternalLink, 
-  GitBranch, 
-  FileText, 
-  Globe, 
-  Video, 
-  AlignLeft, 
-  CheckCircle2, 
-  Loader2, 
-  AlertTriangle, 
   Clock, 
   FolderGit2, 
-  Database,
-  ArrowRight,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 import { DocumentItem } from '../api/sourceIngestion';
 
@@ -50,18 +41,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
     return matchesFilter && matchesSearch;
   });
 
-  const getSourceIcon = (type: string) => {
+  const getSourceLabel = (type: string) => {
     switch (type) {
       case 'GIT':
-        return <GitBranch className="w-3.5 h-3.5 text-[#0071E3]" />;
+        return 'Repository';
       case 'PDF':
-        return <FileText className="w-3.5 h-3.5 text-[#0071E3]" />;
+        return 'PDF';
       case 'WEBSITE':
-        return <Globe className="w-3.5 h-3.5 text-[#0071E3]" />;
+        return 'Web Page';
       case 'YOUTUBE':
-        return <Video className="w-3.5 h-3.5 text-[#0071E3]" />;
+        return 'Video Transcript';
       default:
-        return <AlignLeft className="w-3.5 h-3.5 text-[#0071E3]" />;
+        return 'Text Document';
     }
   };
 
@@ -69,21 +60,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#34C759]/10 text-[#34C759] border border-[#34C759]/20">
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-[#34C759]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#34C759]" />
-            Indexed
+            Ready
           </span>
         );
       case 'PROCESSING':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#0071E3]/10 text-[#0071E3] border border-[#0071E3]/20">
-            <Loader2 className="w-3 h-3 animate-spin" />
-            Vectorizing
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-[#0071E3]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse" />
+            Indexing
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20">
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-[#FF9500]">
             <Clock className="w-3 h-3" />
             Queued
           </span>
@@ -92,7 +83,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         return (
           <span
             title={reason || 'Ingestion failed'}
-            className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20 cursor-help"
+            className="inline-flex items-center gap-1.5 text-[11px] text-[#FF3B30] cursor-help"
           >
             <AlertTriangle className="w-3 h-3" />
             Failed
@@ -109,20 +100,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {/* Header Section */}
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between pb-8 mb-8 border-b border-[#D2D2D7]/50 dark:border-white/10 gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#0071E3] font-semibold">
-                Knowledge Repository
-              </span>
-              <span className="text-[#86868B]">&bull;</span>
-              <span className="text-[11px] font-mono text-[#86868B]">
-                PostgreSQL pgvector 768d
-              </span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
-              Knowledge Base &amp; Codebases
+              Knowledge Base
             </h1>
             <p className="text-sm text-[#6E6E73] dark:text-[#A1A1A6] mt-1.5 max-w-2xl leading-relaxed">
-              Active repositories and indexed technical documents available for grounded semantic retrieval and verifiable Q&amp;A.
+              Indexed documentation, repositories, and technical sources available for Q&amp;A.
             </p>
           </div>
 
@@ -140,22 +122,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
               className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] font-medium text-xs hover:opacity-90 transition-opacity"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Add Knowledge Source</span>
+              <span>Add Source</span>
             </button>
           </div>
         </div>
 
         {/* Filter Strip & Search Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
-          {/* Apple-style Segmented Control */}
+          {/* Segmented Control */}
           <div className="flex items-center p-1 rounded-xl bg-[#F5F5F7] dark:bg-[#161617] border border-[#D2D2D7]/40 dark:border-white/10 overflow-x-auto no-scrollbar gap-1">
             {[
               { id: 'ALL', label: 'All Sources' },
-              { id: 'GIT', label: 'Git Repos' },
+              { id: 'GIT', label: 'Repositories' },
               { id: 'PDF', label: 'PDF Documents' },
               { id: 'WEBSITE', label: 'Web Pages' },
-              { id: 'YOUTUBE', label: 'Video Transcripts' },
-              { id: 'TEXT', label: 'Raw Text' },
+              { id: 'YOUTUBE', label: 'Videos' },
+              { id: 'TEXT', label: 'Text' },
             ].map((tab) => {
               const isSelected = selectedFilter === tab.id;
               return (
@@ -179,7 +161,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Search className="w-3.5 h-3.5 text-[#86868B] absolute left-3.5 top-3" />
             <input
               type="text"
-              placeholder="Filter by name, URL, or branch..."
+              placeholder="Search sources..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 rounded-xl text-xs border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#161617] text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none focus:border-[#0071E3] transition-colors"
@@ -198,15 +180,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </h3>
             <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6] max-w-sm mt-1.5 mb-6 leading-relaxed">
               {searchQuery
-                ? 'No sources matched your current search criteria. Try modifying your filter.'
-                : 'Connect your first Git repository codebase, PDF manual, or web documentation to begin grounded Q&A.'}
+                ? 'No sources match the filter query.'
+                : 'Add a repository, document, or webpage to begin asking questions.'}
             </p>
             <button
               onClick={onOpenUpload}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] text-xs font-medium hover:opacity-90 transition-opacity"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Index New Source</span>
+              <span>Add Source</span>
             </button>
           </div>
         ) : (
@@ -217,12 +199,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 className="group bg-white dark:bg-[#161617] border border-[#D2D2D7]/60 dark:border-white/10 hover:border-[#1D1D1F]/30 dark:hover:border-white/30 rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
-                  {/* Card Header: Type badge & Status pill */}
-                  <div className="flex items-center justify-between gap-2 mb-3.5">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#F5F5F7] dark:bg-white/10 text-[11px] font-mono text-[#1D1D1F] dark:text-[#F5F5F7]">
-                      {getSourceIcon(doc.source_type)}
-                      <span className="font-medium">{doc.source_type}</span>
-                    </div>
+                  {/* Card Header: Plain source label and status */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-[11px] text-[#86868B] font-medium">
+                      {getSourceLabel(doc.source_type)}
+                    </span>
                     {getStatusBadge(doc.status, doc.failure_reason)}
                   </div>
 
@@ -248,35 +229,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </a>
                   )}
 
-                  {/* Git Metadata Tags */}
-                  {doc.source_type === 'GIT' && (
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {doc.git_branch && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[#1D1D1F] dark:text-[#F5F5F7] flex items-center gap-1">
-                          <GitBranch className="w-2.5 h-2.5 text-[#0071E3]" />
-                          {doc.git_branch}
-                        </span>
-                      )}
-                      {doc.git_commit_hash && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[#86868B]" title={doc.git_commit_hash}>
-                          commit:{doc.git_commit_hash.slice(0, 7)}
-                        </span>
-                      )}
+                  {/* Branch info if repository */}
+                  {doc.source_type === 'GIT' && doc.git_branch && (
+                    <div className="text-[10px] text-[#86868B] font-mono mt-2">
+                      branch: {doc.git_branch}
                     </div>
                   )}
                 </div>
 
                 {/* Card Footer */}
                 <div className="mt-5 pt-3.5 border-t border-[#D2D2D7]/40 dark:border-white/10 flex items-center justify-between text-xs">
-                  <div className="text-[11px] font-mono text-[#86868B]">
-                    <span className="font-semibold text-[#1D1D1F] dark:text-[#F5F5F7]">{doc.chunk_count}</span> chunks
+                  <div className="text-[11px] text-[#86868B]">
+                    {doc.chunk_count} chunks
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onDeleteDocument(doc.id)}
                       className="p-1.5 rounded-md text-[#86868B] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors"
-                      title="Delete knowledge source and vectors"
+                      title="Delete source"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -291,7 +262,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       }`}
                     >
                       <MessageSquare className="w-3 h-3" />
-                      <span>Ask Q&amp;A</span>
+                      <span>Open Q&amp;A</span>
                     </button>
                   </div>
                 </div>
