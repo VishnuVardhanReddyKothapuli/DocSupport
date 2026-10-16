@@ -1,6 +1,35 @@
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+@import url('https://fonts.cdnfonts.com/css/sf-mono');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Explicit aliases for SF Pro Text fallback to SF Pro Display weights */
+@font-face {
+  font-family: 'SF Pro Text';
+  font-style: normal;
+  font-weight: 400;
+  src: local('SF Pro Text'), local('SF Pro Display'), url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYREGULAR.woff') format('woff');
+}
+@font-face {
+  font-family: 'SF Pro Text';
+  font-style: normal;
+  font-weight: 500;
+  src: local('SF Pro Text Medium'), local('SF Pro Display Medium'), url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYMEDIUM.woff') format('woff');
+}
+@font-face {
+  font-family: 'SF Pro Text';
+  font-style: normal;
+  font-weight: 600;
+  src: local('SF Pro Text Semibold'), local('SF Pro Display Semibold'), url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYSEMIBOLDITALIC.woff') format('woff');
+}
+@font-face {
+  font-family: 'SF Pro Text';
+  font-style: normal;
+  font-weight: 700;
+  src: local('SF Pro Text Bold'), local('SF Pro Display Bold'), url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYBOLD.woff') format('woff');
+}
 
 @layer base {
   :root {
@@ -28,14 +57,28 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: var(--bg-canvas);
   color: var(--text-primary);
   overflow-x: hidden;
+  letter-spacing: -0.015em;
+}
+
+/* Headings with exact Apple negative tracking */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* Monospace with exact SF Mono */
+code, kbd, samp, pre {
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: normal;
 }
 
 /* Apple-style minimalist scrollbars */
@@ -59,14 +102,5 @@ body {
 
 /* Hairline border utility */
 .border-hairline {
-  border-color: rgba(0, 0, 0, 0.08);
-}
-.dark .border-hairline {
-  border-color: rgba(255, 255, 255, 0.12);
-}
-
-/* Focus outline */
-input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid #0071e3;
-  outline-offset: 1px;
+  border-width: 0.5px;
 }

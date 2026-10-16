@@ -27,46 +27,30 @@ export default {
           darkTextPrimary: "#F5F5F7",
           darkTextSecondary: "#A1A1A6",
         },
-        // Cyber Slate & Titanium Accent Tokens for dark mode consistency
-        titanium: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        },
-        cyber: {
-          canvas: "#090D16",
-          card: "#111827",
-          border: "#1F2937",
-        }
       },
       fontFamily: {
         sans: [
           'SF Pro Display',
+          'SF Pro Text',
           '-apple-system',
           'BlinkMacSystemFont',
-          'Inter',
-          'Segoe UI',
-          'Roboto',
+          'Helvetica Neue',
+          'Helvetica',
+          'Arial',
           'sans-serif'
         ],
         mono: [
           'SF Mono',
-          'Fira Code',
-          'JetBrains Mono',
+          'SFMono-Regular',
+          'ui-monospace',
           'Menlo',
+          'Monaco',
+          'Consolas',
           'monospace'
         ],
       },
       letterSpacing: {
-        tighter: '-0.04em',
+        tighter: '-0.035em',
         tight: '-0.02em',
         normal: '0',
         wide: '0.02em',
