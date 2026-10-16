@@ -220,7 +220,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                 10. Contact Information &amp; Governing Law
               </h2>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-                For legal inquiries, repository compliance concerns, or enterprise licensing, contact your dedicated engineering administrator or review the Swagger API documentation on the local backend instance at <code className="text-[#0071E3] font-mono">http://localhost:8000/docs</code>.
+                For legal inquiries, repository compliance concerns, or enterprise licensing, contact your dedicated organization administrator or legal counsel.
               </p>
             </section>
           </article>

@@ -119,7 +119,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
               Add Knowledge Source
             </h2>
             <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6] mt-0.5">
-              Index codebases, documents, web pages, or transcripts into pgvector 768d.
+              Index codebases, documents, web pages, or transcripts into your knowledge repository.
             </p>
           </div>
           <button 
@@ -144,7 +144,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
               }`}
             >
               <GitBranch className="w-3.5 h-3.5" />
-              <span>GitLoader</span>
+              <span>Git Repository</span>
             </button>
 
             <button

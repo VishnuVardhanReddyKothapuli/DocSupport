@@ -56,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             onClick={() => handleSectionClick('gitloader')}
             className="hover:text-[#0071E3] dark:hover:text-[#2997FF] transition-colors"
           >
-            GitLoader
+            Codebase Ingestion
           </button>
           <button
             onClick={() => handleSectionClick('guardrails')}
@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             onClick={() => handleSectionClick('gitloader')}
             className="block w-full text-left py-1.5 text-[#1D1D1F] dark:text-[#F5F5F7]"
           >
-            GitLoader
+            Codebase Ingestion
           </button>
           <button
             onClick={() => handleSectionClick('guardrails')}

@@ -11,7 +11,7 @@ export const SUPPORTED_SOURCES: Record<string, SourceConfig> = {
   GIT: {
     id: 'GIT',
     name: 'Git Repository',
-    badge: 'GitLoader',
+    badge: 'Repository',
     description: 'Clone and index full software repositories with branch, commit, and file path citations.',
     iconName: 'GitBranch',
     tagColor: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'

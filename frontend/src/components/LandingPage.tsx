@@ -14,8 +14,7 @@ import {
   Terminal, 
   ShieldAlert,
   Clock,
-  Layers,
-  ExternalLink
+  Layers
 } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
@@ -65,15 +64,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <span>Launch Workspace</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-            <a
-              href="http://localhost:8000/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#1D1D1F] dark:text-[#F5F5F7] font-medium text-sm transition-all flex items-center justify-center gap-1.5"
+            <button
+              onClick={() => {
+                const el = document.getElementById('features');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#1D1D1F] dark:text-[#F5F5F7] font-medium text-sm transition-all"
             >
-              <span>Explore API Spec</span>
-              <ExternalLink className="w-3.5 h-3.5 text-[#86868B]" />
-            </a>
+              Explore Capabilities
+            </button>
           </div>
 
           {/* REAL PRODUCT PREVIEW INTERFACE */}
