@@ -18,12 +18,15 @@ import {
 } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { useTheme } from './ThemeContext';
+import FluxLines from './FluxLines';
 
 interface LandingPageProps {
   onNavigate: (route: 'landing' | 'login' | 'terms' | 'app') => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
   const [activePreviewTab, setActivePreviewTab] = useState<'git' | 'pdf' | 'guardrail'>('git');
 
   return (
@@ -33,51 +36,84 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="pt-16 pb-20 md:pt-28 md:pb-28 px-6 max-w-7xl mx-auto text-center">
-          {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-[#6E6E73] dark:text-[#A1A1A6] text-xs font-medium mb-6">
-            <img src="/logo-icon.png" alt="DocSupport Logo" className="w-3.5 h-3.5 rounded object-contain" />
-            <span>DocSupport Enterprise RAG</span>
-            <span className="w-1 h-1 rounded-full bg-[#86868B]"></span>
-            <span>GitLoader &bull; LangGraph &bull; Langfuse</span>
+        <section className="relative pt-16 pb-20 md:pt-28 md:pb-28 px-6 max-w-7xl mx-auto text-center overflow-hidden">
+          {/* Flux Lines Animated Magnetic Fluid Background */}
+          <div className="absolute inset-0 z-0 pointer-events-auto [mask-image:radial-gradient(ellipse_at_center,black_45%,transparent_85%)]">
+            <FluxLines
+              colors={
+                theme === 'dark'
+                  ? ['#2997FF', '#FFFFFF', '#0071E3', '#64D2FF']
+                  : ['#0071E3', '#1D1D1F', '#0077ED', '#86868B']
+              }
+              speed={0.4}
+              scale={1.5}
+              turbulence={0.85}
+              fluidity={0.12}
+              rimWidth={0.25}
+              sharpness={2.2}
+              shimmer={1.2}
+              glow={theme === 'dark' ? 1.8 : 1.2}
+              lineWidth={1.2}
+              flowDirection="down"
+              opacity={theme === 'dark' ? 0.7 : 0.45}
+              mouseInteraction={true}
+              mouseStrength={1.2}
+              mouseRadius={0.35}
+              mouseDampening={0.14}
+              clickSwirl={true}
+              intro={true}
+              lightMode={theme === 'light'}
+              transparent={true}
+              className="w-full h-full"
+            />
           </div>
 
-          {/* Large confident display headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.03em] leading-[1.06] text-[#1D1D1F] dark:text-[#F5F5F7] max-w-5xl mx-auto">
-            Intelligence grounded in your code.
-            <br />
-            <span className="text-[#86868B] dark:text-[#A1A1A6]">
-              Verified to the exact line.
-            </span>
-          </h1>
+          <div className="relative z-10">
+            {/* Eyebrow badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-[#6E6E73] dark:text-[#A1A1A6] text-xs font-medium mb-6 backdrop-blur-sm">
+              <img src="/logo-icon.png" alt="DocSupport Logo" className="w-3.5 h-3.5 rounded object-contain" />
+              <span>DocSupport Enterprise RAG</span>
+              <span className="w-1 h-1 rounded-full bg-[#86868B]"></span>
+              <span>GitLoader &bull; LangGraph &bull; Langfuse</span>
+            </div>
 
-          {/* Concise supporting copy */}
-          <p className="mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl text-[#6E6E73] dark:text-[#A1A1A6] max-w-2xl mx-auto font-normal leading-relaxed tracking-tight">
-            Ingest entire Git repositories, technical PDFs, and documentation. Sub-second vector retrieval on PostgreSQL pgvector, with a LangGraph state machine that explicitly abstains when evidence is missing.
-          </p>
+            {/* Large confident display headline */}
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.03em] leading-[1.06] text-[#1D1D1F] dark:text-[#F5F5F7] max-w-5xl mx-auto">
+              Intelligence grounded in your code.
+              <br />
+              <span className="text-[#86868B] dark:text-[#A1A1A6]">
+                Verified to the exact line.
+              </span>
+            </h1>
 
-          {/* Primary & Secondary Call to Actions */}
-          <div className="mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => onNavigate('app')}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
-            >
-              <span>Launch Workspace</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => {
-                const el = document.getElementById('features');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#1D1D1F] dark:text-[#F5F5F7] font-medium text-sm transition-all"
-            >
-              Explore Capabilities
-            </button>
+            {/* Concise supporting copy */}
+            <p className="mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl text-[#6E6E73] dark:text-[#A1A1A6] max-w-2xl mx-auto font-normal leading-relaxed tracking-tight">
+              Ingest entire Git repositories, technical PDFs, and documentation. Sub-second vector retrieval on PostgreSQL pgvector, with a LangGraph state machine that explicitly abstains when evidence is missing.
+            </p>
+
+            {/* Primary & Secondary Call to Actions */}
+            <div className="mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => onNavigate('app')}
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
+              >
+                <span>Launch Workspace</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {
+                  const el = document.getElementById('features');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#1D1D1F] dark:text-[#F5F5F7] font-medium text-sm transition-all backdrop-blur-sm"
+              >
+                Explore Capabilities
+              </button>
+            </div>
           </div>
 
           {/* REAL PRODUCT PREVIEW INTERFACE */}
-          <div className="mt-14 md:mt-20 max-w-5xl mx-auto rounded-2xl md:rounded-3xl border border-[#D2D2D7]/70 dark:border-white/10 bg-[#FFFFFF] dark:bg-[#161617] shadow-elevated dark:shadow-dark-elevated overflow-hidden text-left">
+          <div className="relative z-10 mt-14 md:mt-20 max-w-5xl mx-auto rounded-2xl md:rounded-3xl border border-[#D2D2D7]/70 dark:border-white/10 bg-[#FFFFFF] dark:bg-[#161617] shadow-elevated dark:shadow-dark-elevated overflow-hidden text-left">
             {/* Window titlebar */}
             <div className="px-5 py-3.5 border-b border-[#D2D2D7]/50 dark:border-white/10 bg-[#F5F5F7] dark:bg-[#1D1D1F] flex items-center justify-between">
               <div className="flex items-center gap-2">
