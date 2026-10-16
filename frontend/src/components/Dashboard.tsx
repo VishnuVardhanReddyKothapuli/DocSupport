@@ -11,6 +11,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { DocumentItem } from '../api/sourceIngestion';
+import { useTheme } from './ThemeContext';
+import RubberSegment from './RubberSegment';
 
 interface DashboardProps {
   documents: DocumentItem[];
@@ -29,8 +31,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onDeleteDocument,
   onSelectForQA,
 }) => {
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string>('ALL');
+
+  const filterTabs = [
+    { value: 'ALL', label: 'All Sources' },
+    { value: 'GIT', label: 'Repositories' },
+    { value: 'PDF', label: 'PDF Documents' },
+    { value: 'WEBSITE', label: 'Web Pages' },
+    { value: 'YOUTUBE', label: 'Videos' },
+    { value: 'TEXT', label: 'Text' },
+  ];
 
   const filteredDocs = documents.filter((doc) => {
     const matchesFilter = selectedFilter === 'ALL' || doc.source_type === selectedFilter;
@@ -129,31 +141,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         {/* Filter Strip & Search Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
-          {/* Segmented Control */}
-          <div className="flex items-center p-1 rounded-xl bg-[#F5F5F7] dark:bg-[#161617] border border-[#D2D2D7]/40 dark:border-white/10 overflow-x-auto no-scrollbar gap-1">
-            {[
-              { id: 'ALL', label: 'All Sources' },
-              { id: 'GIT', label: 'Repositories' },
-              { id: 'PDF', label: 'PDF Documents' },
-              { id: 'WEBSITE', label: 'Web Pages' },
-              { id: 'YOUTUBE', label: 'Videos' },
-              { id: 'TEXT', label: 'Text' },
-            ].map((tab) => {
-              const isSelected = selectedFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedFilter(tab.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                    isSelected
-                      ? 'bg-white dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-[#F5F5F7] shadow-sm font-semibold'
-                      : 'text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7]'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+          {/* Rubber Segmented Filter Control */}
+          <div className="overflow-x-auto no-scrollbar py-0.5">
+            <RubberSegment
+              items={filterTabs}
+              value={selectedFilter}
+              onChange={(val) => setSelectedFilter(val)}
+              equalSlots={false}
+              size="md"
+              radius={12}
+              inset={3}
+              stretch={90}
+              squash={3}
+              speed={1.05}
+              trackColor={theme === 'dark' ? '#161617' : '#F5F5F7'}
+              thumbColor={theme === 'dark' ? '#2C2C2E' : '#FFFFFF'}
+              textColor={theme === 'dark' ? '#86868B' : '#6E6E73'}
+              activeTextColor={theme === 'dark' ? '#F5F5F7' : '#1D1D1F'}
+              className="border border-[#D2D2D7]/50 dark:border-white/10 shadow-xs"
+              aria-label="Filter documents by source type"
+            />
           </div>
 
           {/* Minimal Search Field */}
