@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, 
-  GitBranch, 
   FileText, 
   Globe, 
   Video, 
   AlignLeft, 
-  Lock, 
   AlertCircle,
-  Loader2,
   Plus
 } from 'lucide-react';
 import { 
@@ -17,7 +14,6 @@ import {
   ingestTextDocument, 
   ingestWebDocument, 
   ingestYouTubeDocument, 
-  ingestGitRepository,
   DocumentItem
 } from '../api/sourceIngestion';
 import { MotionButton } from './ui/button';
@@ -28,21 +24,12 @@ interface UploadModalProps {
   onSuccess: (newDoc: DocumentItem) => void;
 }
 
-type TabType = 'GIT' | 'PDF' | 'WEBSITE' | 'YOUTUBE' | 'TEXT';
-
-const DEFAULT_CODE_EXTS = ['.py', '.ts', '.tsx', '.js', '.jsx', '.md', '.go', '.rs', '.java', '.cpp', '.sql', '.yaml', '.json'];
+type TabType = 'PDF' | 'WEBSITE' | 'YOUTUBE' | 'TEXT';
 
 export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('GIT');
+  const [activeTab, setActiveTab] = useState<TabType>('PDF');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Git state
-  const [gitUrl, setGitUrl] = useState('');
-  const [gitBranch, setGitBranch] = useState('');
-  const [gitToken, setGitToken] = useState('');
-  const [gitName, setGitName] = useState('');
-  const [selectedExts, setSelectedExts] = useState<string[]>(DEFAULT_CODE_EXTS);
 
   // PDF state
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -59,12 +46,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
   const [textTitle, setTextTitle] = useState('');
   const [textContent, setTextContent] = useState('');
 
-  const toggleExtension = (ext: string) => {
-    setSelectedExts(prev => 
-      prev.includes(ext) ? prev.filter(e => e !== ext) : [...prev, ext]
-    );
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -73,16 +54,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
     try {
       let createdDoc: DocumentItem;
 
-      if (activeTab === 'GIT') {
-        if (!gitUrl.trim()) throw new Error('Repository URL is required');
-        createdDoc = await ingestGitRepository(
-          gitUrl.trim(),
-          gitBranch.trim() || undefined,
-          selectedExts,
-          gitToken.trim() || undefined,
-          gitName.trim() || undefined
-        );
-      } else if (activeTab === 'PDF') {
+      if (activeTab === 'PDF') {
         if (!pdfFile) throw new Error('Please select a PDF file to upload');
         createdDoc = await uploadPdfDocument(pdfFile);
       } else if (activeTab === 'WEBSITE') {
@@ -107,11 +79,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
   };
 
   const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
-    { id: 'GIT', label: 'Git Repository', icon: GitBranch },
     { id: 'PDF', label: 'PDF Document', icon: FileText },
     { id: 'WEBSITE', label: 'Web Page', icon: Globe },
     { id: 'YOUTUBE', label: 'Video Transcript', icon: Video },
-    { id: 'TEXT', label: 'Raw Text', icon: AlignLeft },
+    { id: 'TEXT', label: 'Raw Text / Notes', icon: AlignLeft },
   ];
 
   return (
@@ -146,7 +117,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
                   Add Knowledge Source
                 </h2>
                 <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6] mt-0.5">
-                  Index codebases, documents, web pages, or transcripts into your knowledge repository.
+                  Index documents, research papers, web pages, or transcripts into your knowledge assistant.
                 </p>
               </div>
               <motion.button 
@@ -203,97 +174,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{error}</span>
                 </motion.div>
-              )}
-
-              {/* GIT TAB */}
-              {activeTab === 'GIT' && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-1.5">
-                      Remote Git Repository URL <span className="text-[#FF3B30]">*</span>
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://github.com/fastapi/fastapi"
-                      value={gitUrl}
-                      onChange={(e) => setGitUrl(e.target.value)}
-                      required
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D2D2D7]/60 dark:border-white/15 bg-white dark:bg-[#000000] text-xs text-[#1D1D1F] dark:text-[#F5F5F7] focus:outline-none focus:border-[#0071E3] transition-colors"
-                    />
-                    <p className="text-[11px] text-[#86868B] mt-1 font-mono">
-                      Shallow clone (<code className="text-[#0071E3]">depth=1</code>) with automated post-indexing disk cleanup.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-1.5">
-                        Branch or Tag (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="main or v1.0.0"
-                        value={gitBranch}
-                        onChange={(e) => setGitBranch(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#D2D2D7]/60 dark:border-white/15 bg-white dark:bg-[#000000] text-xs text-[#1D1D1F] dark:text-[#F5F5F7] focus:outline-none focus:border-[#0071E3] transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-1.5">
-                        Custom Repository Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. FastAPI Core Engine"
-                        value={gitName}
-                        onChange={(e) => setGitName(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#D2D2D7]/60 dark:border-white/15 bg-white dark:bg-[#000000] text-xs text-[#1D1D1F] dark:text-[#F5F5F7] focus:outline-none focus:border-[#0071E3] transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-1.5">
-                      Included File Extensions
-                    </label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {DEFAULT_CODE_EXTS.map((ext) => {
-                        const isSelected = selectedExts.includes(ext);
-                        return (
-                          <motion.button
-                            type="button"
-                            key={ext}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => toggleExtension(ext)}
-                            className={`text-xs px-2.5 py-1 rounded-md border font-mono transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] border-transparent font-medium shadow-sm'
-                                : 'border-[#D2D2D7]/60 dark:border-white/15 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7]'
-                            }`}
-                          >
-                            {ext}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-1.5">
-                      Personal Access Token (Optional, for private repositories)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="password"
-                        placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                        value={gitToken}
-                        onChange={(e) => setGitToken(e.target.value)}
-                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#D2D2D7]/60 dark:border-white/15 bg-white dark:bg-[#000000] text-xs text-[#1D1D1F] dark:text-[#F5F5F7] focus:outline-none focus:border-[#0071E3] transition-colors"
-                      />
-                      <Lock className="w-3.5 h-3.5 text-[#86868B] absolute left-3 top-3" />
-                    </div>
-                  </div>
-                </div>
               )}
 
               {/* PDF TAB */}

@@ -1,0 +1,105 @@
+services:
+  # 1. FastAPI Backend API
+  - type: web
+    name: docsupport-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docsupport-db
+          property: connectionString
+      - key: SYNC_DATABASE_URL
+        fromDatabase:
+          name: docsupport-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: docsupport-redis
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_JWKS_URL
+        value: https://api.clerk.com/v1/jwks
+      - key: LANGFUSE_PUBLIC_KEY
+        sync: false
+      - key: LANGFUSE_SECRET_KEY
+        sync: false
+      - key: LANGFUSE_HOST
+        value: https://cloud.langfuse.com
+      - key: EMBEDDING_MODEL_NAME
+        value: BAAI/bge-base-en-v1.5
+
+  # 2. Celery Background Worker Queue
+  - type: worker
+    name: docsupport-worker
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A app.celery_app worker --loglevel=info --concurrency=2
+    plan: starter
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docsupport-db
+          property: connectionString
+      - key: SYNC_DATABASE_URL
+        fromDatabase:
+          name: docsupport-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: docsupport-redis
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: EMBEDDING_MODEL_NAME
+        value: BAAI/bge-base-en-v1.5
+
+  # 3. React + Vite Frontend (Static Site)
+  - type: web
+    name: docsupport-ui
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: docsupport-api
+          property: url
+
+  # 4. Redis Task Broker & Cache
+  - type: redis
+    name: docsupport-redis
+    ipAllowList: []
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+
+databases:
+  # PostgreSQL 16 with pgvector Extension
+  - name: docsupport-db
+    databaseName: docsupport
+    user: postgres
+    plan: starter
+    postgresMajorVersion: 16
+    ipAllowList: []

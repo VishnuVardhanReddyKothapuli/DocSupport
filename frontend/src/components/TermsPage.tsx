@@ -21,7 +21,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
 
   const sections = [
     { id: 'section-1', title: '1. Acceptance of Terms & Service Scope' },
-    { id: 'section-2', title: '2. Codebase Ingestion & Ephemeral GitLoader Policy' },
+    { id: 'section-2', title: '2. Document Ingestion & Processing Policy' },
     { id: 'section-3', title: '3. Vector Storage, Embeddings & Data Ownership' },
     { id: 'section-4', title: '4. AI Output, Dual Guardrails & Grounding Guarantee' },
     { id: 'section-5', title: '5. Observability, Telemetry & Langfuse Tracing' },
@@ -55,12 +55,12 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
             Terms and Conditions
           </h1>
           <p className="mt-4 text-base sm:text-lg text-[#6E6E73] dark:text-[#A1A1A6] leading-relaxed">
-            These Terms govern your use of the DocSupport Enterprise RAG platform, including GitLoader codebase ingestion, pgvector storage, LangGraph agent pipelines, and Groq inference services.
+            These Terms govern your use of the DocSupport Knowledge Assistant platform, including document ingestion, pgvector storage, LangGraph agent pipelines, and Groq inference services.
           </p>
           <div className="mt-4 flex flex-wrap gap-4 text-xs font-mono text-[#86868B]">
             <span>Effective Date: October 16, 2026</span>
             <span>&bull;</span>
-            <span>Version: 1.2.0 (Enterprise Release)</span>
+            <span>Version: 1.2.0 (Knowledge Assistant Release)</span>
           </div>
         </div>
 
@@ -94,27 +94,27 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                 1. Acceptance of Terms &amp; Service Scope
               </h2>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-                By accessing or connecting knowledge sources to the DocSupport platform (&ldquo;Service&rdquo;), you confirm that you have read, understood, and agreed to be bound by these Terms and Conditions. The Service enables authenticated users to clone and vectorize software repositories, extract text from technical documentation (including PDF, web pages, and transcripts), store 768-dimensional vector embeddings in PostgreSQL pgvector, and query those repositories via LangGraph dual-guardrail agent workflows.
+                By accessing or connecting knowledge sources to the DocSupport platform (&ldquo;Service&rdquo;), you confirm that you have read, understood, and agreed to be bound by these Terms and Conditions. The Service enables authenticated users to extract and vectorize text from multi-format documentation (including PDF, web pages, media transcripts, and markdown), store 768-dimensional vector embeddings in PostgreSQL pgvector, and query those knowledge sources via LangGraph dual-guardrail agent workflows.
               </p>
             </section>
 
             {/* Section 2 */}
             <section id="section-2" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
-                2. Codebase Ingestion &amp; Ephemeral GitLoader Policy
+                2. Document Ingestion &amp; Processing Policy
               </h2>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-                When using the GitLoader service to index a remote Git repository:
+                When uploading or connecting knowledge sources to the platform:
               </p>
               <ul className="list-disc pl-5 space-y-1.5 text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
                 <li>
-                  <strong>Authority to Ingest:</strong> You represent and warrant that you hold the legal right, authorization, or license to clone and index any repository URL and branch provided to the platform.
+                  <strong>Authority to Ingest:</strong> You represent and warrant that you hold the legal right or authorization to process any documents, URLs, or transcripts provided to the platform.
                 </li>
                 <li>
-                  <strong>Ephemeral Storage:</strong> Repository cloning is strictly shallow (<code className="text-[#0071E3] font-mono">depth=1</code>) into isolated, temporary directories on the worker host. All raw source code files are permanently purged from host disks in a guaranteed <code className="font-mono">finally</code> execution block immediately following chunking.
+                  <strong>Ephemeral Processing:</strong> Files uploaded for indexing are parsed in isolated temporary storage and purged immediately following chunking and vector persistence.
                 </li>
                 <li>
-                  <strong>Personal Access Tokens:</strong> Any personal access token provided for private repository ingestion is used strictly in-memory during the clone lifecycle and is never written to public vector tables or logs.
+                  <strong>Tenant Isolation:</strong> Uploaded documents and vector representations are maintained under strict user-scoped tenant isolation and are never shared across organizations or accounts.
                 </li>
               </ul>
             </section>
@@ -125,7 +125,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                 3. Vector Storage, Embeddings &amp; Data Ownership
               </h2>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-                All mathematical vector representations generated from your source materials are 768-dimensional normalized vectors (<code className="text-[#0071E3] font-mono">BAAI/bge-base-en-v1.5</code>) stored in your tenant-scoped PostgreSQL pgvector database. You retain 100% exclusive intellectual property and ownership over all original documents, source code, and resulting vector embeddings. DocSupport does not use your private code or uploaded documents to train public foundational AI models.
+                All mathematical vector representations generated from your source materials are 768-dimensional normalized vectors (<code className="text-[#0071E3] font-mono">BAAI/bge-base-en-v1.5</code>) stored in your tenant-scoped PostgreSQL pgvector database. You retain 100% exclusive intellectual property and ownership over all original documents, notes, and resulting vector embeddings. DocSupport does not use your private documents or data to train public foundational AI models.
               </p>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
                 Deleting a knowledge source from the Dashboard executes an immediate cascading deletion (<code className="font-mono">ON DELETE CASCADE</code>), permanently erasing the parent document record and all associated vector chunks from PostgreSQL.
@@ -148,7 +148,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                   If the retrieved vector chunks do not contain sufficient evidence to answer an inquiry, the system is programmed to explicitly abstain with the phrase: <em className="text-[#1D1D1F] dark:text-[#F5F5F7]">&ldquo;I am unable to answer this question based on the provided document.&rdquo;</em>
                 </li>
                 <li>
-                  While the guardrail engine substantially minimizes hallucinations, AI outputs remain advisory. Developers and technical architects must verify critical architectural, legal, or deployment decisions against their original source code.
+                  While the guardrail engine substantially minimizes hallucinations, AI outputs remain advisory. Users must verify critical decisions against their original source documents.
                 </li>
               </ul>
             </section>
@@ -179,7 +179,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                   Ingest or vectorize malware, exploits, or materials that violate applicable intellectual property or data privacy laws.
                 </li>
                 <li>
-                  Attempt denial-of-service, automated scraping of unauthorized repositories, or circumvention of rate-limiting infrastructure.
+                  Attempt denial-of-service, automated scraping of unauthorized endpoints, or circumvention of rate-limiting infrastructure.
                 </li>
               </ul>
             </section>
@@ -210,7 +210,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                 9. Limitation of Liability &amp; Disclaimers
               </h2>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-                THE SERVICE IS PROVIDED ON AN &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; BASIS. TO THE MAXIMUM EXTENT PERMITTED BY LAW, DOCSUPPORT AND ITS CONTRIBUTORS DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL DOCSUPPORT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM CODE DECISIONS OR SERVICE OUTAGES.
+                THE SERVICE IS PROVIDED ON AN &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; BASIS. TO THE MAXIMUM EXTENT PERMITTED BY LAW, DOCSUPPORT AND ITS CONTRIBUTORS DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL DOCSUPPORT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM OPERATIONAL DECISIONS OR SERVICE OUTAGES.
               </p>
             </section>
 
@@ -220,7 +220,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                 10. Contact Information &amp; Governing Law
               </h2>
               <p className="text-xs md:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-                For legal inquiries, repository compliance concerns, or enterprise licensing, contact your dedicated organization administrator or legal counsel.
+                For legal inquiries, compliance concerns, or enterprise licensing, contact your dedicated organization administrator or legal counsel.
               </p>
             </section>
           </article>

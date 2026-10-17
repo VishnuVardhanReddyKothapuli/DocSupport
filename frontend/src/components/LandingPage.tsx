@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowRight, 
-  GitBranch, 
   ShieldCheck, 
   FileText, 
   Globe, 
   Video, 
   Check, 
   ChevronRight, 
-  Code2, 
   ShieldAlert,
   Clock,
   Sparkles,
-  Layers,
   Terminal,
+  AlignLeft,
   Database,
   Cpu,
   Lock,
@@ -26,9 +24,8 @@ import { HeroInteractiveDemo } from './HeroInteractiveDemo';
 import { LangGraphVisualizer } from './LangGraphVisualizer';
 import { AmbientGlow, FloatingGridPattern } from './ui/ambient-glow';
 import { Badge, AnimatedBadge } from './ui/badge';
-import { Button, MotionButton } from './ui/button';
+import { MotionButton } from './ui/button';
 import { SpotlightCard } from './ui/card';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './ui/accordion';
 import { GlitterWarp } from './ui/glitter-warp';
 
 interface LandingPageProps {
@@ -40,10 +37,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   const guardrailScenarios = {
     missing: {
-      title: "Query with Undocumented Parameter / Missing Evidence",
-      prompt: "How do I configure FastAPI.set_scoped_cache(True) for redis-backed sessions?",
-      genericResponse: "You can configure this using FastAPI.set_scoped_cache(True) inside your app initialization lifespan...",
-      genericAlert: "Hallucinated nonexistent function. Causes silent production breakages.",
+      title: "Query with Missing Evidence / Unsupported Question",
+      prompt: "What is the projected Q4 EBITDA margin according to the provided report?",
+      genericResponse: "The projected Q4 EBITDA margin is approximately 28.5% based on seasonal growth trends in previous quarters...",
+      genericAlert: "Hallucinated financial forecast. The provided report only covers Q1 through Q3.",
       docsupportResponse: "I am unable to answer this question based on the provided document.",
       docsupportAlert: "Evidence missing in source chunks. Output guardrail explicitly abstains rather than generating hallucinations.",
     },
@@ -56,12 +53,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       docsupportAlert: "Input Guard detected prompt injection pattern and sanitized query before execution.",
     },
     grounded: {
-      title: "Legitimate Code Architecture Query",
-      prompt: "Where are Celery task acknowledgements committed when late ACK is configured?",
-      genericResponse: "Celery acknowledges tasks when they are received by the worker daemon.",
-      genericAlert: "Inaccurate summary lacking commit hash and file context.",
-      docsupportResponse: "When acks_late is enabled, Celery executes message.ack() inside a guaranteed finally block in celery/worker/strategy.py (lines 88-116) [1].",
-      docsupportAlert: "Verified to line-level citation [1] matching 94.2% cosine similarity.",
+      title: "Verified Document-Grounded Query",
+      prompt: "What is the maximum query latency and recovery objective defined in the SLA?",
+      genericResponse: "The SLA likely requires low latency and standard backups for enterprise workloads.",
+      genericAlert: "Vague, ungrounded summary lacking direct page citations.",
+      docsupportResponse: "The architecture mandates a 99th percentile query latency below 250ms, with zero Recovery Point Objective (RPO=0) across availability zones (Page 14, Section 4.2) [1].",
+      docsupportAlert: "Verified with page citation [1] matching 95.4% cosine similarity.",
     },
   };
 
@@ -69,7 +66,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="relative min-h-screen bg-[#FBFBFD] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] transition-colors duration-200 selection:bg-[#0071E3] selection:text-white flex flex-col justify-between overflow-x-hidden">
-      {/* Glitter Warp Starfield Warp Tunnel (React Bits Pro) */}
+      {/* Glitter Warp Starfield Warp Tunnel */}
       <div className="absolute top-0 left-0 w-full h-[1100px] pointer-events-none overflow-hidden z-0 bg-[#030308]">
         <GlitterWarp />
         {/* Subtle radial depth gradient */}
@@ -82,7 +79,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       <AmbientGlow className="z-[1] opacity-60" />
       <FloatingGridPattern className="z-[1] opacity-35" />
 
-      {/* Global Apple-Style Navigation */}
+      {/* Global Navigation */}
       <Navbar currentRoute="landing" onNavigate={onNavigate} />
 
       <main className="flex-1 relative z-10">
@@ -97,9 +94,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           >
             <AnimatedBadge variant="secondary" className="px-3.5 py-1 text-xs bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
               <img src="/logo-icon.png" alt="DocSupport Logo" className="w-3.5 h-3.5 rounded object-contain" />
-              <span>DocSupport Enterprise RAG</span>
+              <span>DocSupport Knowledge Assistant</span>
               <span className="w-1 h-1 rounded-full bg-white/40"></span>
-              <span>GitLoader &bull; LangGraph &bull; Langfuse</span>
+              <span>Full-Stack RAG &bull; LangGraph &bull; Langfuse</span>
             </AnimatedBadge>
           </motion.div>
 
@@ -110,7 +107,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.03em] leading-[1.06] text-white dark:text-[#F5F5F7] max-w-5xl mx-auto drop-shadow-[0_4px_30px_rgba(0,0,0,0.7)]"
           >
-            Intelligence grounded in your code.
+            Your Knowledge.
             <br />
             <motion.span
               initial={{ opacity: 0 }}
@@ -118,7 +115,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-[#A1A1A6]"
             >
-              Verified to the exact line.
+              One Intelligent Workspace.
             </motion.span>
           </motion.h1>
 
@@ -127,9 +124,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl text-[#C7C7CC] dark:text-[#A1A1A6] max-w-2xl mx-auto font-normal leading-relaxed tracking-tight"
+            className="mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl text-[#C7C7CC] dark:text-[#A1A1A6] max-w-3xl mx-auto font-normal leading-relaxed tracking-tight"
           >
-            Ingest entire Git repositories, technical PDFs, and documentation. Sub-second vector retrieval on PostgreSQL pgvector, with a LangGraph state machine that explicitly abstains when evidence is missing.
+            Upload your documents, connect your knowledge sources, and get AI-powered answers grounded in relevant source material. Built with pgvector semantic retrieval, LangGraph agent workflows, and verifiable citations.
           </motion.p>
 
           {/* Primary & Secondary Call to Actions */}
@@ -172,9 +169,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </motion.div>
         </section>
 
-        {/* SECTION 1: GITLOADER ENGINE STORYTELLING */}
+        {/* SECTION 1: DOCUMENT INGESTION & CHUNKING ARCHITECTURE */}
         <motion.section
-          id="gitloader"
+          id="ingestion"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
@@ -185,15 +182,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {/* Editorial Heading */}
             <div className="max-w-3xl mb-14 md:mb-20">
               <span className="text-xs font-semibold tracking-wider uppercase text-[#0071E3] mb-3 block">
-                GitLoader Architecture
+                Ingestion &amp; Chunking Architecture
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-tight">
-                Your entire repository.
+                Your unstructured documents.
                 <br />
-                <span className="text-[#86868B]">Indexed down to commit and line numbers.</span>
+                <span className="text-[#86868B]">Indexed with page-level semantic fidelity.</span>
               </h2>
               <p className="mt-4 text-base md:text-lg text-[#6E6E73] dark:text-[#A1A1A6] leading-relaxed">
-                Connect GitHub, GitLab, or private repositories. GitLoader executes shallow clones with automatic filetype filtering, AST module header injection, and line tracking—deleting temporary directories immediately after vectorization.
+                Parse technical PDFs, web pages, media transcripts, and markdown with layout-aware chunking and page-level metadata injection—stored as 768-dimensional normalized dense vectors in PostgreSQL with pgvector.
               </p>
             </div>
 
@@ -204,18 +201,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 {[
                   {
                     step: "1",
-                    title: "Shallow Clone & Ephemeral Isolation",
-                    desc: "Clones remote repositories using --depth 1 targeting specific branches or tags. Directories are created in isolated temporary storage and destroyed in a guaranteed finally block.",
+                    title: "Multi-Format Document Parsing",
+                    desc: "Parses PDFs via PyPDF with page-level chunk mapping, extracts clean typography from web pages using BeautifulSoup, and processes video transcripts with timestamp alignment.",
                   },
                   {
                     step: "2",
-                    title: "Intelligent Language & Asset Filtering",
-                    desc: "Filters 15+ code extensions (.py, .ts, .tsx, .rs, .go, .java, .sql), automatically discarding lockfiles, binary files, minified assets, and test fixtures over 1 MB.",
+                    title: "Recursive Character Chunking",
+                    desc: "Splits extracted text using LangChain RecursiveCharacterTextSplitter (900 character chunks, 150 overlap) with hierarchical separators to preserve paragraph and sentence boundaries.",
                   },
                   {
                     step: "3",
-                    title: "Architectural Header Injection",
-                    desc: "Prepends file path and line context (// File: src/auth.ts | Lines 12-45) to each chunk so embeddings retain architectural context even for isolated snippets.",
+                    title: "Document Metadata & Page Tagging",
+                    desc: "Injects source document titles, page numbers, line ranges, and URLs into every chunk's metadata, enabling verifiable bracketed citations in every generated answer.",
                   },
                 ].map((item, idx) => (
                   <motion.div
@@ -236,13 +233,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 ))}
               </div>
 
-              {/* Code visual preview */}
+              {/* Document Chunk visual preview */}
               <div className="lg:col-span-7">
                 <SpotlightCard className="p-6">
                   <div className="flex items-center justify-between pb-3 border-b border-[#D2D2D7]/40 dark:border-white/10 mb-4 text-xs font-mono text-[#86868B]">
                     <span className="text-[#1D1D1F] dark:text-[#F5F5F7] font-semibold flex items-center gap-1.5">
                       <Terminal className="w-3.5 h-3.5 text-[#0071E3]" />
-                      GitLoader Chunk Structure
+                      Document Chunk &amp; Vector Metadata
                     </span>
                     <Badge variant="outline" className="font-mono text-[10px]">
                       pgvector schema
@@ -251,23 +248,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
                   <div className="space-y-3 font-mono text-xs">
                     <div className="p-3 rounded-lg bg-[#F5F5F7] dark:bg-[#1D1D1F] text-[#6E6E73] dark:text-[#A1A1A6] text-[11px] border border-[#D2D2D7]/30 dark:border-white/5">
-                      <span className="text-[#0071E3] font-semibold">// Injected Architectural Context Header</span><br />
-                      // File: backend/app/auth/service.py | Lines: 42-88 | Language: python
+                      <span className="text-[#0071E3] font-semibold"># Source Document Metadata Header</span><br />
+                      # Document: system_architecture_spec_v2.pdf | Page: 14 | Chunk: #38
                     </div>
 
-                    <pre className="p-3.5 rounded-lg bg-[#F5F5F7] dark:bg-[#1A1A1C] text-[#1D1D1F] dark:text-[#F5F5F7] text-xs border border-[#D2D2D7]/30 dark:border-white/5 overflow-x-auto leading-relaxed">
-{`class KeyManager:
-    """Manages JWKS public keys and token rotation."""
-    def verify_token(self, token: str) -> Claims:
-        header = jwt.get_unverified_header(token)
-        key = self.get_jwks_key(header["kid"])
-        return jwt.decode(token, key, algorithms=["RS256"])`}
+                    <pre className="p-3.5 rounded-lg bg-[#F5F5F7] dark:bg-[#1A1A1C] text-[#1D1D1F] dark:text-[#F5F5F7] text-xs border border-[#D2D2D7]/30 dark:border-white/5 overflow-x-auto leading-relaxed whitespace-pre-wrap">
+{`"4.2 Service Level Objectives (SLOs):
+The primary distributed data store must maintain synchronous transactional writes across availability zones. System-wide 99th percentile query latency must remain below 250ms under peak load. In the event of primary node degradation, failover orchestrators must preserve RPO=0."`}
                     </pre>
 
                     <div className="p-3 rounded-lg bg-[#F5F5F7] dark:bg-[#1D1D1F] text-[11px] text-[#6E6E73] dark:text-[#A1A1A6] border border-[#D2D2D7]/30 dark:border-white/5 flex items-center justify-between">
                       <div>
                         <span className="text-[#86868B]">JSONB Metadata: </span>
-                        {`{ "file_path": "backend/app/auth/service.py", "lines": "42-88", "commit": "3bf910a" }`}
+                        {`{ "file_name": "system_architecture_spec_v2.pdf", "page_number": 14, "section": "4.2 High Availability" }`}
                       </div>
                       <Badge variant="success" dot className="shrink-0 text-[10px]">
                         Indexed
@@ -280,7 +273,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
         </motion.section>
 
-        {/* SECTION 2: DUAL GUARDRAILS & LANGGRAPH (ZERO HALLUCINATION) */}
+        {/* SECTION 2: DUAL GUARDRAILS & LANGGRAPH */}
         <motion.section
           id="guardrails"
           initial={{ opacity: 0, y: 30 }}
@@ -299,7 +292,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <span className="text-[#86868B]">Explicitly abstaining when evidence is missing.</span>
             </h2>
             <p className="mt-4 text-base md:text-lg text-[#6E6E73] dark:text-[#A1A1A6] leading-relaxed">
-              Standard AI systems guess when they do not know. DocSupport enforces a multi-node LangGraph state machine with input prompt injection sanitization and output grounding verification.
+              Standard AI systems guess when they lack sufficient evidence. DocSupport enforces a multi-node LangGraph state machine with input prompt injection screening, vector similarity thresholds, and output grounding verification.
             </p>
           </div>
 
@@ -316,7 +309,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   Side-by-Side Behavior Reality Check
                 </h3>
                 <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
-                  Select a scenario to verify how unconstrained models fail and how DocSupport guarantees safety.
+                  Select a scenario to verify how unconstrained models fail and how DocSupport guarantees grounded reliability.
                 </p>
               </div>
 
@@ -325,7 +318,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 {(['missing', 'injection', 'grounded'] as const).map((key) => {
                   const isSelected = activeGuardrailScenario === key;
                   const labels = {
-                    missing: "Missing Param",
+                    missing: "Missing Evidence",
                     injection: "Prompt Injection",
                     grounded: "Grounded Query",
                   };
@@ -377,7 +370,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     Generic AI (Unconstrained)
                   </div>
                   <Badge variant="destructive" className="text-[10px]">
-                    Dangerous
+                    Hallucination Risk
                   </Badge>
                 </div>
                 <p className="text-xs sm:text-sm text-[#1D1D1F] dark:text-[#F5F5F7] leading-relaxed italic bg-white/60 dark:bg-black/30 p-3.5 rounded-xl border border-rose-200/50 dark:border-rose-900/30 font-mono">
@@ -430,44 +423,44 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="max-w-7xl mx-auto">
             <div className="max-w-3xl mb-14 md:mb-20">
               <span className="text-xs font-semibold tracking-wider uppercase text-[#0071E3] mb-3 block">
-                Multi-Source Knowledge
+                Multi-Source Ingestion
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-tight">
                 Unified vectorization.
                 <br />
-                <span className="text-[#86868B]">For every technical asset.</span>
+                <span className="text-[#86868B]">For every document format.</span>
               </h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
-                  icon: GitBranch,
-                  title: "Git Repositories",
-                  desc: "Clone remote repositories with branch targeting, language filtering, commit hashing, and line number citations.",
-                  badge: "GitLoader • 15+ Languages",
-                  color: "from-blue-500/10 to-indigo-500/10",
-                },
-                {
                   icon: FileText,
-                  title: "Technical PDFs",
-                  desc: "PyPDF extraction with page-level mapping. Every answer cites the exact document page number.",
+                  title: "PDF Documents",
+                  desc: "PyPDF extraction with page-level chunk mapping. Answers cite exact document page numbers for immediate verification.",
                   badge: "PyPDF • Page Tracking",
                   color: "from-sky-500/10 to-blue-500/10",
                 },
                 {
                   icon: Globe,
-                  title: "Web Documentation",
-                  desc: "Clean HTML text parsing via BeautifulSoup, preserving document hierarchy while removing scripts and ads.",
+                  title: "Web Pages & Articles",
+                  desc: "Clean HTML parsing via BeautifulSoup, preserving document headings and typography while removing scripts and navigation clutter.",
                   badge: "BeautifulSoup • Clean HTML",
                   color: "from-indigo-500/10 to-purple-500/10",
                 },
                 {
                   icon: Video,
                   title: "Video Transcripts",
-                  desc: "Closed-caption transcript extraction with exact timeline timestamps mapped directly into vector chunks.",
+                  desc: "Closed-caption transcript extraction with exact timeline timestamps mapped directly into vector chunks for video Q&A.",
                   badge: "Transcripts • Timestamps",
                   color: "from-rose-500/10 to-amber-500/10",
+                },
+                {
+                  icon: AlignLeft,
+                  title: "Markdown & Raw Text",
+                  desc: "Direct notes, architecture decision records, or markdown documentation chunked with line count tracking.",
+                  badge: "Direct Ingestion • Markdown",
+                  color: "from-amber-500/10 to-emerald-500/10",
                 },
               ].map((item, idx) => {
                 const Icon = item.icon;
@@ -501,7 +494,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
         </motion.section>
 
-        {/* SECTION 4: EDITORIAL TECHNICAL SPECIFICATIONS MATRIX */}
+        {/* SECTION 4: TECHNICAL SPECIFICATIONS MATRIX */}
         <motion.section
           id="architecture"
           initial={{ opacity: 0, y: 30 }}
@@ -557,10 +550,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
           <div className="max-w-3xl mx-auto relative z-10">
             <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
-              Start indexing your code today.
+              Start exploring your knowledge today.
             </h2>
             <p className="mt-4 text-base md:text-lg text-[#6E6E73] dark:text-[#A1A1A6]">
-              Launch the workspace to connect a repository, upload technical documents, and run grounded queries with zero hallucination.
+              Launch the workspace to upload documents, connect web sources, and run grounded queries with source citations and verified guardrails.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -586,7 +579,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </motion.section>
       </main>
 
-      {/* Global Apple-Style Footer */}
+      {/* Global Footer */}
       <Footer onNavigate={onNavigate} />
     </div>
   );

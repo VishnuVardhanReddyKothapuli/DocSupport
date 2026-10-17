@@ -22,7 +22,7 @@ async def query_knowledge_source(
     user_id: str = Depends(get_current_user)
 ):
     """
-    Executes LangGraph RAG Agent Workflow across any knowledge source (Git, PDF, Web, YouTube, Text):
+    Executes LangGraph RAG Agent Workflow across ingested knowledge sources (PDF, Web, YouTube, Text):
     1. Input Guard Node: Sanitization & injection screening
     2. Retrieval Node: Sub-second pgvector cosine distance search
     3. Grade Node: Sufficiency check to prevent hallucination

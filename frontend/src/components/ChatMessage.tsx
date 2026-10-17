@@ -48,16 +48,16 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
   };
 
   const getSourceIcon = (citation: Citation) => {
-    if (citation.language || citation.file_path?.includes('.')) {
-      return <FileCode className="w-3.5 h-3.5 text-[#0071E3]" />;
-    }
     if (citation.page_number) {
       return <FileText className="w-3.5 h-3.5 text-[#0071E3]" />;
     }
     if (citation.url?.includes('youtube') || citation.url?.includes('youtu.be')) {
       return <Video className="w-3.5 h-3.5 text-[#0071E3]" />;
     }
-    return <Globe className="w-3.5 h-3.5 text-[#0071E3]" />;
+    if (citation.url) {
+      return <Globe className="w-3.5 h-3.5 text-[#0071E3]" />;
+    }
+    return <FileText className="w-3.5 h-3.5 text-[#0071E3]" />;
   };
 
   return (
@@ -170,14 +170,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
                               {getSourceIcon(c)}
                               <span className="truncate">{c.file_path || c.url || 'Source Document'}</span>
                             </div>
-                            {c.line_start && (
-                              <span className="text-[10px] text-[#86868B] font-mono shrink-0">
-                                L{c.line_start}-{c.line_end}
-                              </span>
-                            )}
                             {c.page_number && (
                               <span className="text-[10px] text-[#86868B] font-mono shrink-0">
                                 p.{c.page_number}
+                              </span>
+                            )}
+                            {c.line_start && !c.page_number && (
+                              <span className="text-[10px] text-[#86868B] font-mono shrink-0">
+                                L{c.line_start}-{c.line_end}
                               </span>
                             )}
                           </div>

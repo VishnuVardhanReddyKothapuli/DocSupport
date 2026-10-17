@@ -7,7 +7,7 @@ import {
   MessageSquare, 
   ExternalLink, 
   Clock, 
-  FolderGit2, 
+  Database, 
   RefreshCw,
   AlertTriangle,
   FileCode,
@@ -47,11 +47,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const filterTabs = [
     { value: 'ALL', label: 'All Sources' },
-    { value: 'GIT', label: 'Repositories' },
     { value: 'PDF', label: 'PDF Documents' },
     { value: 'WEBSITE', label: 'Web Pages' },
     { value: 'YOUTUBE', label: 'Videos' },
-    { value: 'TEXT', label: 'Text' },
+    { value: 'TEXT', label: 'Notes & Text' },
   ];
 
   const filteredDocs = documents.filter((doc) => {
@@ -131,7 +130,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </Badge>
             </div>
             <p className="text-sm text-[#6E6E73] dark:text-[#A1A1A6] max-w-2xl leading-relaxed">
-              Indexed documentation, repositories, and technical sources available for verified Q&amp;A.
+              Indexed documentation, research papers, web articles, and media transcripts available for verified Q&amp;A.
             </p>
           </div>
 
@@ -212,7 +211,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/10 text-[#1D1D1F] dark:text-[#F5F5F7] flex items-center justify-center mb-3 shadow-xs"
             >
-              <FolderGit2 className="w-6 h-6 text-[#0071E3]" />
+              <Database className="w-6 h-6 text-[#0071E3]" />
             </motion.div>
             <h3 className="font-semibold text-[#1D1D1F] dark:text-[#F5F5F7] text-base">
               No knowledge sources found
@@ -220,7 +219,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6] max-w-sm mt-1.5 mb-6 leading-relaxed">
               {searchQuery
                 ? 'No sources match the filter query.'
-                : 'Add a repository, document, or webpage to begin asking questions.'}
+                : 'Add a document, webpage, or media transcript to begin asking questions.'}
             </p>
             <MotionButton
               onClick={onOpenUpload}
@@ -290,14 +289,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                           <span className="truncate">{doc.source_url}</span>
                         </a>
-                      )}
-
-                      {/* Branch info if repository */}
-                      {doc.source_type === 'GIT' && doc.git_branch && (
-                        <div className="text-[10px] text-[#86868B] font-mono mt-2 flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3]" />
-                          branch: {doc.git_branch}
-                        </div>
                       )}
                     </div>
 

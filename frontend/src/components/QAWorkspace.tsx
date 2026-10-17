@@ -179,7 +179,7 @@ export const QAWorkspace: React.FC<QAWorkspaceProps> = ({
                 {selectedDoc.original_name}
               </h2>
               <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6] mt-1.5 mb-6 leading-relaxed max-w-md">
-                Ask questions about content, architecture, or requirements. Answers are strictly grounded with line-level citations.
+                Ask questions about content, key findings, or requirements. Answers are strictly grounded with source citations.
               </p>
 
               {/* Suggested Questions */}
@@ -188,13 +188,10 @@ export const QAWorkspace: React.FC<QAWorkspaceProps> = ({
                   Suggested Queries
                 </div>
                 {[
-                  selectedDoc.source_type === 'GIT'
-                    ? 'Explain the repository structure and entry points.'
-                    : 'What are the main key points in this document?',
-                  selectedDoc.source_type === 'GIT'
-                    ? 'How is authentication or database configuration handled?'
-                    : 'List the primary requirements and constraints.',
-                  'Provide a concise summary of this source.',
+                  'Summarize the key findings in this document.',
+                  'What are the main requirements described in this report?',
+                  'List the primary conclusions and actionable takeaways.',
+                  'Which sections support this answer?',
                 ].map((s, idx) => (
                   <motion.button
                     key={idx}
@@ -303,14 +300,14 @@ export const QAWorkspace: React.FC<QAWorkspaceProps> = ({
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-[#86868B] pt-2 border-t border-[#D2D2D7]/40 dark:border-white/10">
-                    {selectedCitation.line_start && (
-                      <div>Lines: {selectedCitation.line_start}-{selectedCitation.line_end}</div>
-                    )}
                     {selectedCitation.page_number && (
                       <div>Page: {selectedCitation.page_number}</div>
                     )}
-                    {selectedCitation.language && (
-                      <div>Lang: {selectedCitation.language}</div>
+                    {selectedCitation.url && (
+                      <div className="truncate" title={selectedCitation.url}>Web Source</div>
+                    )}
+                    {selectedCitation.line_start && !selectedCitation.page_number && (
+                      <div>Lines: {selectedCitation.line_start}-{selectedCitation.line_end}</div>
                     )}
                     <div>Chunk #{selectedCitation.chunk_index}</div>
                   </div>
@@ -335,7 +332,7 @@ export const QAWorkspace: React.FC<QAWorkspaceProps> = ({
                 <Quote className="w-8 h-8 mx-auto mb-2 opacity-30 text-[#86868B]" />
                 <p className="font-medium">No citation selected</p>
                 <p className="text-[11px] mt-1 text-[#86868B] max-w-xs mx-auto leading-relaxed">
-                  Click any citation tag in an answer to inspect its exact source excerpt and line numbers.
+                  Click any citation tag in an answer to inspect its exact source excerpt and page references.
                 </p>
               </motion.div>
             )}

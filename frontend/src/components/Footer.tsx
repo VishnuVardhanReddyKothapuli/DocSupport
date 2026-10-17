@@ -21,22 +21,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('app')}
                   className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors text-left"
                 >
-                  Codebase Indexing
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('app')}
-                  className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors text-left"
-                >
-                  Dual Guardrails
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('app')}
-                  className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors text-left"
-                >
                   Document Ingestion
                 </button>
               </li>
@@ -45,7 +29,23 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('app')}
                   className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors text-left"
                 >
-                  Video Transcripts
+                  Semantic Vector Search
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('app')}
+                  className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors text-left"
+                >
+                  Dual Guardrails &amp; Abstention
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('app')}
+                  className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors text-left"
+                >
+                  Verbatim Source Citations
                 </button>
               </li>
             </ul>

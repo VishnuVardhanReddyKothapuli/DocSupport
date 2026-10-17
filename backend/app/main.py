@@ -28,8 +28,8 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down DocSupport backend services...")
 
 app = FastAPI(
-    title="DocSupport Enterprise RAG Platform",
-    description="Full-stack Enterprise RAG platform with GitLoader codebase indexing, dual guardrails, and pgvector search.",
+    title="DocSupport — Full-Stack RAG Knowledge Assistant",
+    description="Full-stack document-grounded RAG knowledge assistant with multi-source ingestion, dual guardrails, and pgvector semantic search.",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -61,7 +61,7 @@ app.include_router(query_router)
 @app.get("/", tags=["Root"])
 async def root():
     return {
-        "platform": "DocSupport Enterprise RAG Platform",
+        "platform": "DocSupport — Full-Stack RAG Knowledge Assistant",
         "status": "operational",
         "docs_url": "/docs",
         "swagger_alias": "/doc",

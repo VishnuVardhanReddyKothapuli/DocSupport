@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
 
   const navLinks = [
     { id: 'features', label: 'Capabilities', action: () => handleSectionClick('features') },
-    { id: 'gitloader', label: 'Codebase Ingestion', action: () => handleSectionClick('gitloader') },
+    { id: 'ingestion', label: 'Document Ingestion', action: () => handleSectionClick('ingestion') },
     { id: 'guardrails', label: 'Dual Guardrails', action: () => handleSectionClick('guardrails') },
     { id: 'architecture', label: 'Architecture', action: () => handleSectionClick('architecture') },
     { id: 'terms', label: 'Terms', action: () => onNavigate('terms') },

@@ -115,7 +115,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
               Sign in to DocSupport
             </h1>
             <p className="mt-2 text-xs sm:text-sm text-[#6E6E73] dark:text-[#A1A1A6]">
-              Enter your enterprise credentials to access your indexed codebases and knowledge library.
+              Enter your credentials to access your indexed documents and knowledge assistant.
             </p>
           </div>
 
@@ -244,7 +244,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
               size="pill"
               className="w-full py-2.5 text-xs font-medium gap-2"
             >
-              <span>Explore as Guest Developer</span>
+              <span>Explore as Guest User</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#86868B]" />
             </MotionButton>
           </div>
@@ -258,7 +258,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
             >
               Terms &amp; Conditions
             </button>
-            . Your repository access tokens and code snippets are handled under strict ephemeral isolation.
+            . Your uploaded documents and vector embeddings are protected under strict tenant isolation.
           </p>
         </motion.div>
       </main>

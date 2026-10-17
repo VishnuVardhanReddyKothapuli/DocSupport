@@ -1,96 +1,71 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Clock, Code2, Copy, Check, ShieldCheck, Terminal, Sparkles, CheckCircle2 } from "lucide-react";
+import { Clock, FileText, Copy, Check, ShieldCheck, Sparkles } from "lucide-react";
 import { AnimatedNumber } from "./ui/animated-counter";
-import { Badge } from "./ui/badge";
 
 interface DemoScenario {
   id: string;
   tabLabel: string;
-  repo: string;
-  commit: string;
+  documentName: string;
   query: string;
   answer: string;
-  citationFile: string;
-  citationLines: string;
-  citationCode: string;
+  citationSource: string;
+  citationLocation: string;
+  citationExcerpt: string;
   matchScore: number;
   latencyMs: number;
 }
 
 const SCENARIOS: DemoScenario[] = [
   {
-    id: "fastapi",
-    tabLabel: "FastAPI Dependency Context",
-    repo: "git:github.com/fastapi/fastapi (main:e4f9b2c)",
-    commit: "e4f9b2c",
-    query: "How does the dependency injection system resolve scoped yields and teardowns in FastAPI?",
-    answer: "FastAPI executes dependency resolution via an asynchronous exit stack context manager. When a dependency uses a yield statement, execution pauses at the yield point while the endpoint runs, and finalizers execute during request teardown in reverse dependency order [1].",
-    citationFile: "fastapi/dependencies/utils.py",
-    citationLines: "Lines 145 – 182",
-    citationCode: `async def solve_dependencies(
-    *,
-    request: Request,
-    dependant: Dependant,
-    async_exit_stack: AsyncExitStack,
-):
-    # Yield-dependency execution
-    if is_gen_callable(call):
-        cm = contextmanager_in_threadpool(...)
-        yielded = await async_exit_stack.enter_async_context(cm)
-        return yielded`,
-    matchScore: 94.2,
+    id: "spec",
+    tabLabel: "Architecture Spec (PDF)",
+    documentName: "pdf:system_architecture_spec_v2.pdf (Page 14)",
+    query: "What are the primary latency and persistence requirements specified in the SLA?",
+    answer: "The architecture mandates a 99th percentile query latency below 250 milliseconds, with synchronous multi-region replication ensuring a Recovery Point Objective (RPO) of zero for all state transitions [1].",
+    citationSource: "system_architecture_spec_v2.pdf",
+    citationLocation: "Page 14 • Section 4.2: High Availability & SLOs",
+    citationExcerpt: `4.2 Service Level Objectives (SLOs):
+The primary distributed data store must maintain synchronous transactional writes across availability zones. System-wide 99th percentile query latency must remain below 250ms under peak load. In the event of primary node degradation, failover orchestrators must preserve RPO=0.`,
+    matchScore: 95.4,
     latencyMs: 142,
   },
   {
-    id: "pytorch",
-    tabLabel: "PyTorch Attention Scaler",
-    repo: "git:github.com/pytorch/pytorch (main:9a8d21c)",
-    commit: "9a8d21c",
-    query: "How does scaled dot product attention calculate causal masking and dropout scale factors?",
-    answer: "The scaled dot product kernel multiplies Query and Key tensors, divides logits by sqrt(d_k), applies additive boolean lower-triangular causal masks, and renormalizes values across the Softmax dimension before matrix multiplication with Value [1].",
-    citationFile: "torch/nn/functional.py",
-    citationLines: "Lines 5120 – 5158",
-    citationCode: `def scaled_dot_product_attention(
-    query, key, value, attn_mask=None, dropout_p=0.0, is_causal=False
-):
-    scale_factor = 1 / math.sqrt(query.size(-1))
-    attn_weight = query @ key.transpose(-2, -1) * scale_factor
-    if is_causal:
-        attn_weight += causal_mask
-    return softmax(attn_weight, dim=-1) @ value`,
-    matchScore: 96.8,
+    id: "financial",
+    tabLabel: "Financial Report (PDF)",
+    documentName: "pdf:annual_earnings_analysis_2025.pdf (Page 8)",
+    query: "Summarize the key revenue growth drivers and operating margin expansion.",
+    answer: "Consolidated annual revenue expanded 34% year-over-year driven primarily by enterprise platform subscriptions, while operating margin widened to 24.5% (up 630 bps) due to automation of document workflows [1].",
+    citationSource: "annual_earnings_analysis_2025.pdf",
+    citationLocation: "Page 8 • Table 2.1: Financial Highlights",
+    citationExcerpt: `Table 2.1 — Consolidated Financial Highlights:
+Consolidated annual revenue reached $142.8M, reflecting a 34% increase YoY. Operating margin widened to 24.5% (up 630 bps), driven by increased gross retention and efficiency gains across autonomous document processing workflows.`,
+    matchScore: 97.1,
     latencyMs: 118,
   },
   {
-    id: "celery",
-    tabLabel: "Celery Late ACK Delivery",
-    repo: "git:github.com/celery/celery (master:c3b4012)",
-    commit: "c3b4012",
-    query: "Where is task_acks_late handled to prevent message loss upon worker termination?",
-    answer: "When task_acks_late is enabled, Celery defers message acknowledgement on the AMQP broker channel until after the task function either finishes or raises an unhandled exception, ensuring tasks remain queued if worker containers crash midway [1].",
-    citationFile: "celery/worker/strategy.py",
-    citationLines: "Lines 88 – 116",
-    citationCode: `if not acks_late:
-    message.ack()
-try:
-    handle(message)
-finally:
-    if acks_late:
-        message.ack()`,
-    matchScore: 91.5,
-    latencyMs: 156,
+    id: "clinical",
+    tabLabel: "Research Paper (PDF)",
+    documentName: "pdf:clinical_trial_summary_phase3.pdf (Page 22)",
+    query: "What was the observed efficacy rate in the active intervention cohort compared to control?",
+    answer: "The cohort achieved an 82.4% primary endpoint response rate compared to 31.0% in the placebo control group (p < 0.001), with high tolerability observed across all demographic cohorts [1].",
+    citationSource: "clinical_trial_summary_phase3.pdf",
+    citationLocation: "Page 22 • Section 5: Primary Endpoints",
+    citationExcerpt: `Section 5 — Primary Outcome Measures:
+Primary outcome measures demonstrated an 82.4% response rate in the active intervention arm (n=412) versus 31.0% in the control arm (n=204) at week 24 (p < 0.001). Adverse incident profiling indicated high tolerability across all demographic strata.`,
+    matchScore: 94.6,
+    latencyMs: 135,
   },
 ];
 
 export function HeroInteractiveDemo() {
-  const [selectedId, setSelectedId] = React.useState<string>("fastapi");
+  const [selectedId, setSelectedId] = React.useState<string>("spec");
   const [copied, setCopied] = React.useState(false);
 
   const scenario = SCENARIOS.find((s) => s.id === selectedId) || SCENARIOS[0];
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(scenario.citationCode);
+    navigator.clipboard.writeText(scenario.citationExcerpt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -104,7 +79,7 @@ export function HeroInteractiveDemo() {
           <div className="w-3 h-3 rounded-full bg-[#FFBD2E]/80 hover:opacity-100 transition-opacity"></div>
           <div className="w-3 h-3 rounded-full bg-[#27C93F]/80 hover:opacity-100 transition-opacity"></div>
           <span className="ml-2 text-xs font-mono text-[#86868B] dark:text-[#A1A1A6] truncate">
-            {scenario.repo}
+            {scenario.documentName}
           </span>
         </div>
 
@@ -213,8 +188,8 @@ export function HeroInteractiveDemo() {
             >
               <div className="flex items-center justify-between pb-3 border-b border-[#D2D2D7]/50 dark:border-white/10 mb-3">
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#86868B] flex items-center gap-1.5">
-                  <Code2 className="w-3.5 h-3.5 text-[#0071E3]" />
-                  Citation [1] Evidence
+                  <FileText className="w-3.5 h-3.5 text-[#0071E3]" />
+                  Citation [1] Source Evidence
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] font-semibold flex items-center gap-1">
                   <AnimatedNumber value={scenario.matchScore} decimals={1} suffix="% Cosine Match" />
@@ -233,23 +208,23 @@ export function HeroInteractiveDemo() {
 
               <div className="space-y-1 text-xs font-mono text-[#86868B] mb-3">
                 <div className="text-[#1D1D1F] dark:text-[#F5F5F7] font-semibold truncate">
-                  {scenario.citationFile}
+                  {scenario.citationSource}
                 </div>
-                <div>{scenario.citationLines} &bull; commit: {scenario.commit}</div>
+                <div>{scenario.citationLocation}</div>
               </div>
 
-              {/* Verbatim Code Chunk with Copy Button */}
+              {/* Verbatim Document Excerpt with Copy Button */}
               <div className="relative group">
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-white/80 dark:bg-black/50 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] backdrop-blur-sm transition-all opacity-80 group-hover:opacity-100 shadow-xs"
-                  title="Copy verbatim code chunk"
+                  className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-white/80 dark:bg-black/50 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] backdrop-blur-sm transition-all opacity-80 group-hover:opacity-100 shadow-xs cursor-pointer"
+                  title="Copy verbatim document excerpt"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
-                <pre className="p-3.5 rounded-xl bg-[#F5F5F7] dark:bg-[#1A1A1C] border border-[#D2D2D7]/40 dark:border-white/10 text-[11px] font-mono text-[#1D1D1F] dark:text-[#F5F5F7] overflow-x-auto leading-relaxed">
-                  {scenario.citationCode}
+                <pre className="p-3.5 rounded-xl bg-[#F5F5F7] dark:bg-[#1A1A1C] border border-[#D2D2D7]/40 dark:border-white/10 text-[11px] font-mono text-[#1D1D1F] dark:text-[#F5F5F7] overflow-x-auto leading-relaxed whitespace-pre-wrap">
+                  {scenario.citationExcerpt}
                 </pre>
               </div>
             </motion.div>
