@@ -86,7 +86,7 @@ services:
         fromService:
           type: web
           name: docsupport-api
-          property: url
+          envVarKey: RENDER_EXTERNAL_URL
 
   # 4. Redis Task Broker & Cache
   - type: redis
@@ -99,7 +99,7 @@ databases:
   # PostgreSQL 16 with pgvector Extension
   - name: docsupport-db
     databaseName: docsupport
-    user: postgres
+    user: docsupport_user
     plan: starter
-    postgresMajorVersion: 16
+    postgresMajorVersion: "16"
     ipAllowList: []
