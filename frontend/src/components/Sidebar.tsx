@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { 
   Database, 
   MessageSquare, 
@@ -10,6 +11,7 @@ import {
   LogOut 
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
+import { Badge } from './ui/badge';
 
 interface SidebarProps {
   activeTab: 'dashboard' | 'qa';
@@ -31,9 +33,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Brand & Navigation */}
       <div>
         <div className="p-5 border-b border-[#D2D2D7]/50 dark:border-white/10">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onNavigate?.('landing')}
-            className="flex items-center gap-2.5 group text-left focus:outline-none"
+            className="flex items-center gap-2.5 group text-left focus:outline-none cursor-pointer"
             title="Return to Product Overview"
           >
             <img
@@ -47,19 +51,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </h1>
               <p className="text-[11px] text-[#86868B]">Enterprise Knowledge Base</p>
             </div>
-          </button>
+          </motion.button>
         </div>
 
         {/* Navigation items */}
         <div className="p-3 space-y-1">
           {onNavigate && (
-            <button
+            <motion.button
+              whileHover={{ x: -2 }}
               onClick={() => onNavigate('landing')}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Overview</span>
-            </button>
+            </motion.button>
           )}
 
           <div className="pt-1 pb-1">
@@ -68,30 +73,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+            className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'dashboard'
-                ? 'bg-white dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-[#F5F5F7] shadow-sm font-semibold'
-                : 'text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5'
+                ? 'text-[#1D1D1F] dark:text-[#F5F5F7] font-semibold'
+                : 'text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7]'
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            {activeTab === 'dashboard' && (
+              <motion.div
+                layoutId="sidebarActivePill"
+                transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                className="absolute inset-0 bg-white dark:bg-[#2C2C2E] rounded-lg shadow-sm -z-10 border border-black/5 dark:border-white/10"
+              />
+            )}
+            <div className="flex items-center gap-2.5 relative z-10">
               <Database className={`w-4 h-4 ${activeTab === 'dashboard' ? 'text-[#0071E3]' : 'text-[#86868B]'}`} />
               <span>Knowledge Base</span>
             </div>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[#6E6E73] dark:text-[#A1A1A6]">
+            <span className="relative z-10 text-[11px] font-mono px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[#6E6E73] dark:text-[#A1A1A6]">
               {documentCount}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('qa')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+            className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'qa'
-                ? 'bg-white dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-[#F5F5F7] shadow-sm font-semibold'
-                : 'text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5'
+                ? 'text-[#1D1D1F] dark:text-[#F5F5F7] font-semibold'
+                : 'text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7]'
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            {activeTab === 'qa' && (
+              <motion.div
+                layoutId="sidebarActivePill"
+                transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                className="absolute inset-0 bg-white dark:bg-[#2C2C2E] rounded-lg shadow-sm -z-10 border border-black/5 dark:border-white/10"
+              />
+            )}
+            <div className="flex items-center gap-2.5 relative z-10">
               <MessageSquare className={`w-4 h-4 ${activeTab === 'qa' ? 'text-[#0071E3]' : 'text-[#86868B]'}`} />
               <span>Q&amp;A Workspace</span>
             </div>
@@ -104,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {onNavigate && (
           <button
             onClick={() => onNavigate('terms')}
-            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-[11px] font-medium text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-[11px] font-medium text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <FileText className="w-3.5 h-3.5" />
@@ -114,19 +133,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* Theme Toggle Button */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
           onClick={toggleTheme}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium border border-[#D2D2D7]/50 dark:border-white/10 bg-white dark:bg-[#1D1D1F] text-[#1D1D1F] dark:text-[#F5F5F7] hover:bg-[#FBFBFD] dark:hover:bg-[#2C2C2E] transition-all"
+          className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium border border-[#D2D2D7]/50 dark:border-white/10 bg-white dark:bg-[#1D1D1F] text-[#1D1D1F] dark:text-[#F5F5F7] hover:bg-[#FBFBFD] dark:hover:bg-[#2C2C2E] transition-all cursor-pointer shadow-xs"
         >
           <div className="flex items-center gap-2">
             {theme === 'dark' ? <Moon className="w-3.5 h-3.5 text-[#2997FF]" /> : <Sun className="w-3.5 h-3.5 text-[#FF9500]" />}
             <span>{theme === 'dark' ? 'Dark Theme' : 'Light Theme'}</span>
           </div>
           <span className="text-[10px] text-[#86868B] capitalize">{theme}</span>
-        </button>
+        </motion.button>
 
         {/* User Card */}
-        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white dark:bg-[#1D1D1F] border border-[#D2D2D7]/50 dark:border-white/10 shadow-sm">
+        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white dark:bg-[#1D1D1F] border border-[#D2D2D7]/50 dark:border-white/10 shadow-xs">
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="w-7 h-7 rounded-lg bg-black/5 dark:bg-white/10 text-[#1D1D1F] dark:text-[#F5F5F7] flex items-center justify-center font-bold text-xs shrink-0">
               <User className="w-3.5 h-3.5" />
@@ -141,13 +162,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           {onNavigate && (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => onNavigate('login')}
-              className="text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] p-1 rounded-md transition-colors"
+              className="text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] p-1 rounded-md transition-colors cursor-pointer"
               title="Sign Out / Switch Account"
             >
               <LogOut className="w-3.5 h-3.5" />
-            </button>
+            </motion.button>
           )}
         </div>
       </div>

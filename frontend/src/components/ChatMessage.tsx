@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { motion, AnimatePresence } from 'motion/react';
 import { Citation } from '../api/queryResponse';
 import { 
   ShieldAlert, 
@@ -60,19 +61,27 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
   };
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-6`}
+    >
       <div className={`max-w-3xl w-full ${isUser ? 'flex justify-end' : ''}`}>
         {isUser ? (
           // User Message Bubble (Apple Classic Blue, Crisp Typography)
-          <div className="bg-[#0071E3] text-white px-5 py-3 rounded-2xl rounded-tr-sm max-w-xl shadow-sm selection:bg-white selection:text-[#0071E3]">
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            className="bg-[#0071E3] text-white px-5 py-3 rounded-2xl rounded-tr-sm max-w-xl shadow-sm selection:bg-white selection:text-[#0071E3]"
+          >
             <p className="text-[14px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
             <div className="text-[10px] text-white/70 mt-1 text-right font-mono">
               {message.timestamp}
             </div>
-          </div>
+          </motion.div>
         ) : (
           // Assistant Message Card (Apple Surface Card, Hairline Border)
-          <div className="w-full bg-white dark:bg-[#161617] border border-[#D2D2D7]/60 dark:border-white/10 rounded-xl p-5 sm:p-6 shadow-sm transition-all">
+          <div className="w-full bg-white dark:bg-[#161617] border border-[#D2D2D7]/60 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-sm transition-all">
             {/* Header: Identity & Latency */}
             <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#D2D2D7]/40 dark:border-white/10">
               <div className="flex items-center gap-2.5">
@@ -86,23 +95,29 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
                 </span>
                 {message.latencyMs && (
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[#86868B] flex items-center gap-1">
-                    <Clock className="w-2.5 h-2.5" />
+                    <Clock className="w-2.5 h-2.5 text-[#0071E3]" />
                     {message.latencyMs}ms
                   </span>
                 )}
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleCopy}
-                className="text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors p-1 rounded-md"
+                className="text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
                 title="Copy response markdown"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-[#34C759]" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </motion.button>
             </div>
 
             {/* Abstention Warning Banner (Dual Guardrail trigger) */}
             {message.abstained && (
-              <div className="mb-4 p-3.5 rounded-xl bg-[#FF9500]/10 border border-[#FF9500]/25 flex items-start gap-2.5">
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="mb-4 p-3.5 rounded-xl bg-[#FF9500]/10 border border-[#FF9500]/25 flex items-start gap-2.5"
+              >
                 <ShieldAlert className="w-4 h-4 text-[#FF9500] shrink-0 mt-0.5" />
                 <div className="text-xs">
                   <div className="font-semibold text-[#FF9500]">
@@ -112,7 +127,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
                     {message.abstentionReason || 'The answer is absent or ambiguous in the provided source chunks. The engine strictly refrained from hallucinating.'}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Markdown Content with Editorial Line Height */}
@@ -137,7 +152,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
                     return (
                       <div
                         key={c.id || idx}
-                        className="rounded-lg border border-[#D2D2D7]/60 dark:border-white/10 bg-[#F5F5F7] dark:bg-[#1D1D1F] overflow-hidden transition-all text-xs"
+                        className="rounded-xl border border-[#D2D2D7]/60 dark:border-white/10 bg-[#F5F5F7] dark:bg-[#1D1D1F] overflow-hidden transition-all text-xs"
                       >
                         {/* Header bar */}
                         <div
@@ -171,20 +186,31 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
                             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[#6E6E73] dark:text-[#A1A1A6]">
                               {(c.similarity * 100).toFixed(1)}% match
                             </span>
-                            {isExpanded ? (
-                              <ChevronUp className="w-3.5 h-3.5 text-[#86868B]" />
-                            ) : (
+                            <motion.div
+                              animate={{ rotate: isExpanded ? 180 : 0 }}
+                              transition={{ duration: 0.2 }}
+                            >
                               <ChevronDown className="w-3.5 h-3.5 text-[#86868B]" />
-                            )}
+                            </motion.div>
                           </div>
                         </div>
 
-                        {/* Verbatim quote body */}
-                        {isExpanded && (
-                          <div className="px-4 py-3 bg-white dark:bg-[#000000] border-t border-[#D2D2D7]/40 dark:border-white/10 font-mono text-[11px] leading-relaxed text-[#1D1D1F] dark:text-[#F5F5F7] whitespace-pre-wrap selection:bg-[#0071E3]/20">
-                            {c.content}
-                          </div>
-                        )}
+                        {/* Verbatim quote body with AnimatePresence */}
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.25, ease: [0.04, 0.62, 0.23, 0.98] }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-4 py-3 bg-white dark:bg-[#000000] border-t border-[#D2D2D7]/40 dark:border-white/10 font-mono text-[11px] leading-relaxed text-[#1D1D1F] dark:text-[#F5F5F7] whitespace-pre-wrap selection:bg-[#0071E3]/20">
+                                {c.content}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     );
                   })}
@@ -194,6 +220,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSelectCitat
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

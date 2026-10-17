@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Plus, 
   Search, 
@@ -8,11 +9,20 @@ import {
   Clock, 
   FolderGit2, 
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  FileCode,
+  FileText,
+  Globe,
+  Video,
+  AlignLeft,
+  Sparkles
 } from 'lucide-react';
 import { DocumentItem } from '../api/sourceIngestion';
 import { useTheme } from './ThemeContext';
 import RubberSegment from './RubberSegment';
+import { SpotlightCard } from './ui/card';
+import { Badge } from './ui/badge';
+import { MotionButton } from './ui/button';
 
 interface DashboardProps {
   documents: DocumentItem[];
@@ -53,18 +63,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
     return matchesFilter && matchesSearch;
   });
 
-  const getSourceLabel = (type: string) => {
+  const getSourceDetails = (type: string) => {
     switch (type) {
       case 'GIT':
-        return 'Repository';
+        return { label: 'Repository', icon: FileCode, color: 'text-emerald-500' };
       case 'PDF':
-        return 'PDF';
+        return { label: 'PDF Document', icon: FileText, color: 'text-blue-500' };
       case 'WEBSITE':
-        return 'Web Page';
+        return { label: 'Web Page', icon: Globe, color: 'text-indigo-500' };
       case 'YOUTUBE':
-        return 'Video Transcript';
+        return { label: 'Video Transcript', icon: Video, color: 'text-rose-500' };
       default:
-        return 'Text Document';
+        return { label: 'Text Document', icon: AlignLeft, color: 'text-amber-500' };
     }
   };
 
@@ -72,34 +82,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-[#34C759]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#34C759]" />
+          <Badge variant="success" dot pulse>
             Ready
-          </span>
+          </Badge>
         );
       case 'PROCESSING':
         return (
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-[#0071E3]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse" />
+          <Badge variant="glow" dot pulse>
             Indexing
-          </span>
+          </Badge>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-[#FF9500]">
-            <Clock className="w-3 h-3" />
+          <Badge variant="secondary" className="gap-1 font-mono text-[10px]">
+            <Clock className="w-2.5 h-2.5" />
             Queued
-          </span>
+          </Badge>
         );
       case 'FAILED':
         return (
-          <span
-            title={reason || 'Ingestion failed'}
-            className="inline-flex items-center gap-1.5 text-[11px] text-[#FF3B30] cursor-help"
-          >
-            <AlertTriangle className="w-3 h-3" />
+          <Badge variant="destructive" title={reason || 'Ingestion failed'} className="gap-1 cursor-help">
+            <AlertTriangle className="w-2.5 h-2.5" />
             Failed
-          </span>
+          </Badge>
         );
       default:
         return null;
@@ -110,37 +115,56 @@ export const Dashboard: React.FC<DashboardProps> = ({
     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-[#FBFBFD] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] transition-colors duration-200">
       <div className="max-w-7xl mx-auto w-full px-6 py-8 md:py-10 flex flex-col flex-1">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between pb-8 mb-8 border-b border-[#D2D2D7]/50 dark:border-white/10 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col md:flex-row items-start md:items-end justify-between pb-8 mb-8 border-b border-[#D2D2D7]/50 dark:border-white/10 gap-6"
+        >
           <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
-              Knowledge Base
-            </h1>
-            <p className="text-sm text-[#6E6E73] dark:text-[#A1A1A6] mt-1.5 max-w-2xl leading-relaxed">
-              Indexed documentation, repositories, and technical sources available for Q&amp;A.
+            <div className="flex items-center gap-2 mb-1">
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
+                Knowledge Base
+              </h1>
+              <Badge variant="secondary" className="font-mono text-[11px]">
+                {documents.length} Sources
+              </Badge>
+            </div>
+            <p className="text-sm text-[#6E6E73] dark:text-[#A1A1A6] max-w-2xl leading-relaxed">
+              Indexed documentation, repositories, and technical sources available for verified Q&amp;A.
             </p>
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <button
+            <motion.button
               onClick={onRefresh}
-              className="p-2.5 rounded-full border border-[#D2D2D7]/60 dark:border-white/15 text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-2.5 rounded-full border border-[#D2D2D7]/60 dark:border-white/15 text-[#6E6E73] dark:text-[#A1A1A6] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
               title="Refresh source records"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#0071E3]' : ''}`} />
-            </button>
+            </motion.button>
 
-            <button
+            <MotionButton
               onClick={onOpenUpload}
-              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] font-medium text-xs hover:opacity-90 transition-opacity"
+              variant="default"
+              size="pill"
+              className="flex-1 md:flex-initial gap-2 px-5 py-2.5 text-xs shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Source</span>
-            </button>
+            </MotionButton>
           </div>
-        </div>
+        </motion.div>
 
         {/* Filter Strip & Search Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6"
+        >
           {/* Rubber Segmented Filter Control */}
           <div className="overflow-x-auto no-scrollbar py-0.5">
             <RubberSegment
@@ -171,17 +195,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
               placeholder="Search sources..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl text-xs border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#161617] text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none focus:border-[#0071E3] transition-colors"
+              className="w-full pl-9 pr-4 py-2 rounded-xl text-xs border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#161617] text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none focus:border-[#0071E3] transition-colors shadow-xs"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Source Cards Grid */}
         {filteredDocs.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-[#D2D2D7] dark:border-white/15 bg-white/40 dark:bg-[#161617]/30 my-4">
-            <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/10 text-[#1D1D1F] dark:text-[#F5F5F7] flex items-center justify-center mb-3">
-              <FolderGit2 className="w-6 h-6" />
-            </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex-1 flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-[#D2D2D7] dark:border-white/15 bg-white/40 dark:bg-[#161617]/30 my-4"
+          >
+            <motion.div
+              animate={{ y: [-4, 4, -4] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/10 text-[#1D1D1F] dark:text-[#F5F5F7] flex items-center justify-center mb-3 shadow-xs"
+            >
+              <FolderGit2 className="w-6 h-6 text-[#0071E3]" />
+            </motion.div>
             <h3 className="font-semibold text-[#1D1D1F] dark:text-[#F5F5F7] text-base">
               No knowledge sources found
             </h3>
@@ -190,92 +222,119 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 ? 'No sources match the filter query.'
                 : 'Add a repository, document, or webpage to begin asking questions.'}
             </p>
-            <button
+            <MotionButton
               onClick={onOpenUpload}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] text-xs font-medium hover:opacity-90 transition-opacity"
+              variant="default"
+              size="pill"
+              className="gap-2 px-5 py-2 text-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Source</span>
-            </button>
-          </div>
+            </MotionButton>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredDocs.map((doc) => (
-              <div
-                key={doc.id}
-                className="group bg-white dark:bg-[#161617] border border-[#D2D2D7]/60 dark:border-white/10 hover:border-[#1D1D1F]/30 dark:hover:border-white/30 rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  {/* Card Header: Plain source label and status */}
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-[11px] text-[#86868B] font-medium">
-                      {getSourceLabel(doc.source_type)}
-                    </span>
-                    {getStatusBadge(doc.status, doc.failure_reason)}
-                  </div>
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.06 },
+              },
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          >
+            {filteredDocs.map((doc) => {
+              const details = getSourceDetails(doc.source_type);
+              const SourceIcon = details.icon;
 
-                  {/* Document Name */}
-                  <h3 
-                    className="font-semibold text-sm text-[#1D1D1F] dark:text-[#F5F5F7] truncate leading-tight" 
-                    title={doc.original_name}
-                  >
-                    {doc.original_name}
-                  </h3>
+              return (
+                <motion.div
+                  key={doc.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 15 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                >
+                  <SpotlightCard className="p-5 h-full flex flex-col justify-between">
+                    <div>
+                      {/* Card Header: Plain source label and status */}
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="text-[11px] text-[#86868B] font-medium flex items-center gap-1.5">
+                          <SourceIcon className={`w-3.5 h-3.5 ${details.color}`} />
+                          {details.label}
+                        </span>
+                        {getStatusBadge(doc.status, doc.failure_reason)}
+                      </div>
 
-                  {/* Source URL / Link */}
-                  {doc.source_url && (
-                    <a
-                      href={doc.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[11px] text-[#86868B] hover:text-[#0071E3] dark:hover:text-[#2997FF] truncate flex items-center gap-1 mt-1 font-mono transition-colors"
-                      title={doc.source_url}
-                    >
-                      <ExternalLink className="w-2.5 h-2.5 shrink-0" />
-                      <span className="truncate">{doc.source_url}</span>
-                    </a>
-                  )}
+                      {/* Document Name */}
+                      <h3 
+                        className="font-semibold text-sm text-[#1D1D1F] dark:text-[#F5F5F7] truncate leading-tight" 
+                        title={doc.original_name}
+                      >
+                        {doc.original_name}
+                      </h3>
 
-                  {/* Branch info if repository */}
-                  {doc.source_type === 'GIT' && doc.git_branch && (
-                    <div className="text-[10px] text-[#86868B] font-mono mt-2">
-                      branch: {doc.git_branch}
+                      {/* Source URL / Link */}
+                      {doc.source_url && (
+                        <a
+                          href={doc.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] text-[#86868B] hover:text-[#0071E3] dark:hover:text-[#2997FF] truncate flex items-center gap-1 mt-1 font-mono transition-colors"
+                          title={doc.source_url}
+                        >
+                          <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                          <span className="truncate">{doc.source_url}</span>
+                        </a>
+                      )}
+
+                      {/* Branch info if repository */}
+                      {doc.source_type === 'GIT' && doc.git_branch && (
+                        <div className="text-[10px] text-[#86868B] font-mono mt-2 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3]" />
+                          branch: {doc.git_branch}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* Card Footer */}
-                <div className="mt-5 pt-3.5 border-t border-[#D2D2D7]/40 dark:border-white/10 flex items-center justify-between text-xs">
-                  <div className="text-[11px] text-[#86868B]">
-                    {doc.chunk_count} chunks
-                  </div>
+                    {/* Card Footer */}
+                    <div className="mt-5 pt-3.5 border-t border-[#D2D2D7]/40 dark:border-white/10 flex items-center justify-between text-xs">
+                      <div className="text-[11px] font-mono text-[#86868B]">
+                        {doc.chunk_count} chunks
+                      </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onDeleteDocument(doc.id)}
-                      className="p-1.5 rounded-md text-[#86868B] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors"
-                      title="Delete source"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      <div className="flex items-center gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => onDeleteDocument(doc.id)}
+                          className="p-1.5 rounded-md text-[#86868B] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors cursor-pointer"
+                          title="Delete source"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </motion.button>
 
-                    <button
-                      onClick={() => onSelectForQA(doc)}
-                      disabled={doc.status !== 'COMPLETED'}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        doc.status === 'COMPLETED'
-                          ? 'bg-[#1D1D1F] dark:bg-[#F5F5F7] text-white dark:text-[#1D1D1F] hover:opacity-90'
-                          : 'bg-black/5 dark:bg-white/5 text-[#86868B] cursor-not-allowed opacity-50'
-                      }`}
-                    >
-                      <MessageSquare className="w-3 h-3" />
-                      <span>Open Q&amp;A</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                        <MotionButton
+                          onClick={() => onSelectForQA(doc)}
+                          disabled={doc.status !== 'COMPLETED'}
+                          variant={doc.status === 'COMPLETED' ? 'default' : 'secondary'}
+                          size="sm"
+                          className="gap-1.5 rounded-full text-xs font-medium"
+                        >
+                          <MessageSquare className="w-3 h-3" />
+                          <span>Open Q&amp;A</span>
+                        </MotionButton>
+                      </div>
+                    </div>
+                  </SpotlightCard>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         )}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { 
   ArrowRight, 
   Lock, 
@@ -13,6 +14,8 @@ import {
 } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { AmbientGlow, FloatingGridPattern } from './ui/ambient-glow';
+import { MotionButton } from './ui/button';
 
 interface LoginPageProps {
   onNavigate: (route: 'landing' | 'login' | 'terms' | 'app') => void;
@@ -75,22 +78,34 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFD] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] transition-colors duration-200 flex flex-col justify-between">
+    <div className="relative min-h-screen bg-[#FBFBFD] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] transition-colors duration-200 flex flex-col justify-between overflow-x-hidden">
+      <AmbientGlow />
+      <FloatingGridPattern />
+
       <Navbar currentRoute="login" onNavigate={onNavigate} />
 
-      <main className="flex-1 flex items-center justify-center px-6 py-16 md:py-24">
-        <div className="w-full max-w-[420px] mx-auto text-center">
+      <main className="flex-1 flex items-center justify-center px-6 py-16 md:py-24 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-[420px] mx-auto text-center"
+        >
           {/* Subtle Brand Identifier */}
           <div className="mb-8">
-            <button
+            <motion.button
+              whileHover={{ x: -3 }}
               onClick={() => onNavigate('landing')}
-              className="inline-flex items-center gap-1.5 text-xs text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors mb-6 group"
+              className="inline-flex items-center gap-1.5 text-xs text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors mb-6 group cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
               <span>Back to Overview</span>
-            </button>
+            </motion.button>
 
-            <img
+            <motion.img
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
               src="/logo-icon.png"
               alt="DocSupport Logo"
               className="w-12 h-12 rounded-2xl object-contain mx-auto mb-4 shadow-subtle border border-black/10 dark:border-white/15"
@@ -105,12 +120,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
           </div>
 
           {/* Authentication Form Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#161617] border border-[#D2D2D7]/70 dark:border-white/10 rounded-2xl sm:rounded-3xl p-7 md:p-8 shadow-subtle text-left">
+          <div className="bg-[#FFFFFF] dark:bg-[#161617] border border-[#D2D2D7]/70 dark:border-white/10 rounded-2xl sm:rounded-3xl p-7 md:p-8 shadow-elevated text-left">
             {errorMessage && (
-              <div className="mb-5 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 text-xs flex items-start gap-2.5">
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-5 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 text-xs flex items-start gap-2.5"
+              >
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>{errorMessage}</span>
-              </div>
+              </motion.div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -169,7 +188,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] p-0.5"
+                    className="absolute right-3 top-2.5 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] p-0.5 cursor-pointer"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -193,23 +212,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
 
               {/* Submit Button */}
               <div className="pt-2">
-                <button
+                <MotionButton
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  isLoading={loading}
+                  variant="default"
+                  size="pill"
+                  className="w-full py-3 text-xs font-medium gap-2 shadow-sm"
                 >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Authenticating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Sign In</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </>
-                  )}
-                </button>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </MotionButton>
               </div>
             </form>
 
@@ -223,15 +236,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
               </span>
             </div>
 
-            {/* Instant Demo Access (No password required for evaluation) */}
-            <button
+            {/* Instant Demo Access */}
+            <MotionButton
               onClick={handleDemoLogin}
               disabled={loading}
-              className="w-full py-2.5 rounded-full border border-[#D2D2D7] dark:border-white/15 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-[#1D1D1F] dark:text-[#F5F5F7] text-xs font-medium transition-colors flex items-center justify-center gap-2"
+              variant="outline"
+              size="pill"
+              className="w-full py-2.5 text-xs font-medium gap-2"
             >
               <span>Explore as Guest Developer</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#86868B]" />
-            </button>
+            </MotionButton>
           </div>
 
           {/* Legal Footnote */}
@@ -239,13 +254,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess
             By signing in, you agree to our{' '}
             <button
               onClick={() => onNavigate('terms')}
-              className="text-[#0071E3] hover:underline"
+              className="text-[#0071E3] hover:underline cursor-pointer"
             >
               Terms &amp; Conditions
             </button>
             . Your repository access tokens and code snippets are handled under strict ephemeral isolation.
           </p>
-        </div>
+        </motion.div>
       </main>
 
       <Footer onNavigate={onNavigate} />
