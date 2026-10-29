@@ -12,6 +12,7 @@ ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
 COPY package*.json ./
 RUN npm install
 COPY . .
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN npm run build
 
 # Production stage
