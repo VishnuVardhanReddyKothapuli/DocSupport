@@ -147,17 +147,19 @@ class LangfuseService:
         model: str,
         prompt: str,
         output: str,
-        latency_ms: float
+        latency_ms: float,
+        provider: str = "groq"
     ):
-        """Logs Groq LLM inference generation observation to Langfuse."""
+        """Logs LLM inference generation observation (Groq or Gemini) to Langfuse."""
         try:
+            provider_title = provider.capitalize() if provider else "LLM"
             gen = trace.start_observation(
                 as_type="generation",
-                name="Groq LLM Generation",
+                name=f"{provider_title} LLM Generation",
                 model=model,
                 input=prompt,
                 output=output,
-                metadata={"temperature": 0.1, "latency_ms": latency_ms}
+                metadata={"provider": provider, "temperature": 0.1, "latency_ms": latency_ms}
             )
             gen.end()
         except Exception as e:

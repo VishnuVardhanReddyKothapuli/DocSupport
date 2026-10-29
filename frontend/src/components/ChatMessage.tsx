@@ -25,6 +25,8 @@ export interface Message {
   abstained?: boolean;
   abstentionReason?: string | null;
   latencyMs?: number;
+  llmProvider?: string | null;
+  llmModel?: string | null;
 }
 
 interface ChatMessageProps {

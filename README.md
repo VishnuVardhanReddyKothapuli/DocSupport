@@ -254,6 +254,139 @@ DocSupport includes a native Render Blueprint specification (`render.yaml`) to a
 
 ---
 
+## ☁️ AWS Cloud Deployment Guide
+
+DocSupport is production-ready for deployment on Amazon Web Services (AWS) using either **Amazon EC2 (Docker Compose)** or **AWS ECS Fargate (Enterprise Multi-Service)**.
+
+### Architecture Topology on AWS
+
+```text
+[ Route 53 DNS ]
+       │
+       ▼
+[ CloudFront CDN / ALB (SSL Termination) ]
+       │
+       ├───► Frontend (S3 Static Hosting or Nginx Container on Port 80)
+       └───► Backend API (FastAPI on Port 8000)
+                 │
+                 ├───► Amazon RDS for PostgreSQL 16 (pgvector extension)
+                 ├───► Amazon ElastiCache / Redis 7 (Broker & Result Cache)
+                 ├───► Celery Worker (Async Ingestion & Embedding Worker)
+                 └───► Groq & Gemini APIs (Dual Engine with Automatic Failover)
+```
+
+---
+
+### Option A: Fast Deployment via AWS EC2 + Docker Compose
+
+The fastest, most cost-effective path to launch DocSupport on AWS:
+
+1. **Launch an EC2 Instance**:
+   - AMI: **Ubuntu 24.04 LTS** (64-bit x86_64)
+   - Instance Type: **t3.medium** or **t3.large** (recommended: 2 vCPUs, 4–8 GB RAM for embedding model caching)
+   - Storage: 30 GB gp3 SSD
+   - Security Group Inbound Rules:
+     - `SSH` (Port 22) from your IP
+     - `HTTP` (Port 80) from `0.0.0.0/0`
+     - `HTTPS` (Port 443) from `0.0.0.0/0`
+     - `Custom TCP` (Port 5173 and 8000) if accessing services directly before reverse-proxying
+
+2. **Connect and Install Docker & Compose**:
+   ```bash
+   ssh -i your-key.pem ubuntu@<ec2-public-ip>
+
+   # Install Docker and Compose plugin
+   sudo apt-get update && sudo apt-get install -y ca-certificates curl gnupg
+   sudo install -m 0755 -d /etc/apt/keyrings
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+   sudo chmod a+r /etc/apt/keyrings/docker.gpg
+   echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+   sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   sudo usermod -aG docker ubuntu
+   newgrp docker
+   ```
+
+3. **Clone Repository & Configure `.env`**:
+   ```bash
+   git clone <your-repository-url> docsupport
+   cd docsupport
+   cp .env.example .env
+   nano .env
+   ```
+   Set your production keys:
+   - `PRIMARY_LLM_PROVIDER=groq`
+   - `GROQ_API_KEY=<your_groq_api_key>`
+   - `GEMINI_API_KEY=<your_gemini_api_key>`
+   - `CLERK_PUBLISHABLE_KEY=<your_clerk_pk>`
+   - `CLERK_SECRET_KEY=<your_clerk_sk>`
+   - `CLERK_JWKS_URL=<your_clerk_jwks_url>`
+   - `POSTGRES_PASSWORD=<strong_db_password>`
+   - `VITE_API_URL=http://<ec2-public-ip>:8000` (or `https://api.yourdomain.com`)
+
+4. **Launch Application**:
+   ```bash
+   docker compose up -d --build
+   ```
+   - Frontend UI: `http://<ec2-public-ip>:5173`
+   - Backend API Docs: `http://<ec2-public-ip>:8000/docs`
+   - Health check: `http://<ec2-public-ip>:8000/health` or `/api/health`
+
+---
+
+### Option B: Enterprise Production via AWS ECS Fargate + RDS + CloudFront
+
+For high availability, auto-scaling, and managed operations:
+
+1. **Database — Amazon RDS for PostgreSQL 16**:
+   - Engine: PostgreSQL 16.2+
+   - Instance Class: `db.t4g.medium` or higher
+   - Enable `pgvector`: Handled automatically on initial startup by `init_db()`.
+   - Security Group: Allow inbound PostgreSQL (Port 5432) only from the ECS tasks security group.
+
+2. **Broker / Cache — Amazon ElastiCache for Redis**:
+   - Engine: Redis 7.x (or Valkey)
+   - Node Type: `cache.t4g.micro` or `cache.t4g.small`
+   - In-Transit Encryption: Supported via `rediss://` URL in `REDIS_URL`.
+
+3. **Backend & Worker Images — Amazon ECR**:
+   - Authenticate Docker to your Amazon ECR registry:
+     ```bash
+     aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+     ```
+   - Build and push the backend container:
+     ```bash
+     docker build -t docsupport-backend ./backend
+     docker tag docsupport-backend:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/docsupport-backend:latest
+     docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/docsupport-backend:latest
+     ```
+
+4. **ECS Task Definitions**:
+   - **Backend Service**:
+     - Image: `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/docsupport-backend:latest`
+     - CPU: 1024 (1 vCPU), Memory: 2048 (2 GB)
+     - Port Mapping: `8000`
+     - Application Load Balancer Target Group: Health check path `/health` or `/api/health`
+     - Environment Variables: Stored securely in AWS Systems Manager (SSM) Parameter Store or Secrets Manager.
+   - **Celery Worker Service**:
+     - Same ECR image with command override: `celery -A app.celery_app worker --loglevel=info --concurrency=2`
+     - CPU: 1024, Memory: 2048
+
+5. **Frontend Hosting — Amazon S3 + CloudFront**:
+   - Build frontend assets with production backend URL:
+     ```bash
+     cd frontend
+     VITE_API_URL=https://api.yourdomain.com VITE_CLERK_PUBLISHABLE_KEY=pk_live_... npm run build
+     ```
+   - Sync `dist/` to your S3 bucket:
+     ```bash
+     aws s3 sync dist/ s3://docsupport-frontend-bucket/ --delete
+     ```
+   - Configure **CloudFront Distribution**:
+     - Default root object: `index.html`
+     - Custom Error Response: HTTP 404 / 403 ➔ `/index.html` with HTTP 200 (SPA client routing).
+
+---
+
 ## 📡 API Documentation & Available Endpoints
 
 Interactive Swagger documentation is available at `http://localhost:8000/docs` (with a redirect alias at `/doc`).

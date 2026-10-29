@@ -29,6 +29,9 @@ class RAGGraphState(TypedDict):
     verified_citations: List[Citation]
     latency_ms: float
     langfuse_trace: Any
+    preferred_provider: Optional[str]
+    llm_provider: Optional[str]
+    llm_model: Optional[str]
 
 async def node_input_guard(state: RAGGraphState) -> Dict[str, Any]:
     """Node 1: Evaluates prompt injection, jailbreaks, and sanitizes input."""
@@ -88,12 +91,13 @@ async def node_grade_retrieval(state: RAGGraphState) -> Dict[str, Any]:
     return {}
 
 async def node_generate(state: RAGGraphState) -> Dict[str, Any]:
-    """Node 4: Generates strictly grounded response using Groq llama-3.3-70b-versatile."""
+    """Node 4: Generates strictly grounded response using Groq / Gemini with automatic mutual failover."""
     t0 = time.time()
-    raw_answer = LLMService.generate_grounded_answer(
+    raw_answer, provider_used, model_used = LLMService.generate_grounded_answer_with_metadata(
         query=state["query"],
         citations=state["citations"],
-        temperature=0.1
+        temperature=0.1,
+        preferred_provider=state.get("preferred_provider")
     )
     elapsed = (time.time() - t0) * 1000
 
@@ -102,13 +106,18 @@ async def node_generate(state: RAGGraphState) -> Dict[str, Any]:
         from app.config import settings
         LangfuseService.log_llm_generation(
             trace=trace,
-            model=settings.GROQ_MODEL,
+            model=model_used or settings.GROQ_MODEL,
             prompt=state["query"],
             output=raw_answer,
-            latency_ms=elapsed
+            latency_ms=elapsed,
+            provider=provider_used
         )
 
-    return {"raw_answer": raw_answer}
+    return {
+        "raw_answer": raw_answer,
+        "llm_provider": provider_used,
+        "llm_model": model_used
+    }
 
 async def node_output_guard(state: RAGGraphState) -> Dict[str, Any]:
     """Node 5: Output Guardrail: checks grounding, verifies citations, prevents hallucinations."""

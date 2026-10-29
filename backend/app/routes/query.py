@@ -26,7 +26,7 @@ async def query_knowledge_source(
     1. Input Guard Node: Sanitization & injection screening
     2. Retrieval Node: Sub-second pgvector cosine distance search
     3. Grade Node: Sufficiency check to prevent hallucination
-    4. Generation Node: Groq llama-3.3-70b-versatile with strict grounding
+    4. Generation Node: Groq & Gemini Dual Engine with automatic mutual failover
     5. Output Guard Node: Verbatim citation mapping & abstention enforcement
     All execution steps, latencies, and token usage are traced via Langfuse.
     """
@@ -79,7 +79,10 @@ async def query_knowledge_source(
         "abstention_reason": None,
         "verified_citations": [],
         "latency_ms": 0.0,
-        "langfuse_trace": trace
+        "langfuse_trace": trace,
+        "preferred_provider": payload.preferred_provider,
+        "llm_provider": None,
+        "llm_model": None
     }
 
     try:
@@ -95,7 +98,9 @@ async def query_knowledge_source(
             abstained=graph_output.get("abstained", False),
             abstention_reason=graph_output.get("abstention_reason"),
             citations=graph_output.get("verified_citations", []),
-            latency_ms=elapsed_ms
+            latency_ms=elapsed_ms,
+            llm_provider=graph_output.get("llm_provider"),
+            llm_model=graph_output.get("llm_model")
         )
 
     except Exception as e:

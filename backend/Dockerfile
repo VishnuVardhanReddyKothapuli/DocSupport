@@ -13,8 +13,13 @@ WORKDIR /app
 # Copy dependency definition
 COPY requirements.txt .
 
-# Install python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install CPU-only PyTorch first to avoid pulling ~4GB+ of unnecessary CUDA dependencies
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Pre-download SentenceTransformer model into cache to eliminate cold-start boot delay on AWS
+ENV HF_HOME=/root/.cache/huggingface
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en-v1.5')"
 
 # Copy backend source code
 COPY . .

@@ -8,8 +8,9 @@ from app.config import settings
 router = APIRouter(tags=["Health"])
 
 @router.get("/health")
+@router.get("/api/health")
 async def health_check():
-    """Basic liveness probe."""
+    """Basic liveness probe for AWS ALB / Render."""
     return {
         "status": "healthy",
         "timestamp": time.time(),
@@ -18,8 +19,9 @@ async def health_check():
     }
 
 @router.get("/ready")
+@router.get("/api/ready")
 async def readiness_check(db: AsyncSession = Depends(get_db)):
-    """Comprehensive readiness probe checking PostgreSQL and pgvector."""
+    """Comprehensive readiness probe checking PostgreSQL and pgvector for AWS target groups."""
     db_ok = False
     vector_ok = False
     try:

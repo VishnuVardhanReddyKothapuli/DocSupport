@@ -44,10 +44,10 @@ const NODES: NodeData[] = [
   {
     id: "groq-llm",
     step: "04",
-    title: "Groq 70B LLM",
-    shortDesc: "Inference with temperature 0.1 and strict context constraints.",
-    details: "Llama-3.3-70B running on ultra-fast Groq LPUs answers solely within retrieved evidence bounds with bracketed inline citations.",
-    metric: "Temp 0.1 • 750 tokens/s",
+    title: "Groq & Gemini Dual Engine",
+    shortDesc: "Strictly grounded inference with automatic mutual failover.",
+    details: "Ultra-fast Groq LPUs paired with Google Gemini in mutual failover mode. Answers solely within retrieved evidence bounds with bracketed inline citations.",
+    metric: "Temp 0.1 • Mutual Failover",
     icon: Sparkles,
   },
   {

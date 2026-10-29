@@ -1,7 +1,7 @@
 import os
 from typing import List, Union
 from pydantic_settings import BaseSettings
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, AliasChoices
 
 class Settings(BaseSettings):
     # Server
@@ -25,10 +25,18 @@ class Settings(BaseSettings):
         validation_alias="REDIS_URL"
     )
     
-    # LLM Inference (Groq)
+    # LLM Inference (Groq & Gemini Dual Engine with Mutual Failover)
+    PRIMARY_LLM_PROVIDER: str = Field(default="groq", validation_alias="PRIMARY_LLM_PROVIDER")
     GROQ_API_KEY: str = Field(default="", validation_alias="GROQ_API_KEY")
-    GROQ_MODEL: str = "openai/gpt-oss-120b"
-    GROQ_GUARD_MODEL: str = "qwen/qwen3.8-27b"
+    GROQ_MODEL: str = Field(default="openai/gpt-oss-120b", validation_alias="GROQ_MODEL")
+    GROQ_GUARD_MODEL: str = Field(default="qwen/qwen3.8-27b", validation_alias="GROQ_GUARD_MODEL")
+    
+    GEMINI_API_KEY: str = Field(
+        default="",
+        validation_alias=AliasChoices("GEMINI_API_KEY", "GOOGLE_API_KEY")
+    )
+    GEMINI_MODEL: str = Field(default="gemini-2.5-flash", validation_alias="GEMINI_MODEL")
+    GEMINI_FALLBACK_MODEL: str = Field(default="gemini-1.5-flash", validation_alias="GEMINI_FALLBACK_MODEL")
     
     # Embedding Configuration
     EMBEDDING_MODEL_NAME: str = "BAAI/bge-base-en-v1.5"
@@ -59,6 +67,19 @@ class Settings(BaseSettings):
         "http://localhost",
         "*"
     ]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                import json
+                try:
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     model_config = {
         "env_file": [".env", "../.env"],

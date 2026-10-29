@@ -75,6 +75,8 @@ export const QAWorkspace: React.FC<QAWorkspaceProps> = ({
         abstained: response.abstained,
         abstentionReason: response.abstention_reason,
         latencyMs: response.latency_ms,
+        llmProvider: response.llm_provider,
+        llmModel: response.llm_model,
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
